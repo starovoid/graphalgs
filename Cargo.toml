@@ -1,0 +1,16 @@
+[package]
+name = "graphalgs"
+version = "0.1.0"
+authors = ["PrototypeRailGun <52821033+PrototypeRailGun@users.noreply.github.com>"]
+edition = "2018"
+license = "MIT"
+description="Graph algorithms based on the Rust 'petgraph' library."
+
+[lib]
+
+name = "graphalgs"
+bench = false
+
+[dependencies]
+petgraph = "0.5.1"
+nalgebra = "0.23.2"
