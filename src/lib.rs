@@ -5,3 +5,4 @@ extern crate nalgebra;
 
 pub mod adj_matrix;
 pub mod spec;
+pub mod algo;
