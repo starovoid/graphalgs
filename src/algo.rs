@@ -52,6 +52,7 @@ where
 mod tests {
     use super::*;
     use petgraph::graph::Graph;
+    use petgraph::algo::dijkstra;
 
     #[test]
     fn test_shortest_distances() {
@@ -76,30 +77,54 @@ mod tests {
         graph.add_edge(n10, n6, ()); graph.add_edge(n11, n6, ()); 
         graph.add_edge(n11, n10, ()); graph.add_edge(n0, n9, ());
 
-        assert_eq!(shortest_distances(&graph, graph.from_index(0)), 
-                   vec![0.0, 1.0, 1.0, 2.0, 3.0, 2.0, 3.0, 4.0, 4.0, 1.0, 2.0, 5.0]);
-        assert_eq!(shortest_distances(&graph, graph.from_index(1)), 
-                   vec![inf, 0.0, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf]);
-        assert_eq!(shortest_distances(&graph, graph.from_index(2)), 
-                   vec![inf, 3.0, 0.0, 1.0, 2.0, 1.0, 2.0, 3.0, 3.0, 2.0, 3.0, 4.0]);
-        assert_eq!(shortest_distances(&graph, graph.from_index(3)), 
-                   vec![inf, inf, inf, 0.0, 1.0, inf, 4.0, 5.0, 2.0, inf, 4.0, 3.0]);
-        assert_eq!(shortest_distances(&graph, graph.from_index(4)), 
-                   vec![inf, inf, inf, 4.0, 0.0, inf, 3.0, 4.0, 1.0, inf, 3.0, 2.0]);
-        assert_eq!(shortest_distances(&graph, graph.from_index(5)), 
-                   vec![inf, 2.0, inf, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 1.0, 2.0, 3.0]);
-        assert_eq!(shortest_distances(&graph, graph.from_index(6)), 
-                   vec![inf, inf, inf, 1.0, 2.0, inf, 0.0, 1.0, 2.0, inf, 1.0, 2.0]);
-        assert_eq!(shortest_distances(&graph, graph.from_index(7)), 
-                   vec![inf, inf, inf, 3.0, 4.0, inf, 2.0, 0.0, 1.0, inf, 2.0, 1.0]);
-        assert_eq!(shortest_distances(&graph, graph.from_index(8)), 
-                   vec![inf, inf, inf, 3.0, 4.0, inf, 2.0, 3.0, 0.0, inf, 2.0, 1.0]);
-        assert_eq!(shortest_distances(&graph, graph.from_index(9)), 
-                   vec![inf, 1.0, inf, 3.0, 4.0, inf, 2.0, 3.0, 4.0, 0.0, 1.0, 4.0]);
-        assert_eq!(shortest_distances(&graph, graph.from_index(10)), 
-                   vec![inf, inf, inf, 2.0, 3.0, inf, 1.0, 2.0, 3.0, inf, 0.0, 3.0]);
-        assert_eq!(shortest_distances(&graph, graph.from_index(11)), 
-                   vec![inf, inf, inf, 2.0, 3.0, inf, 1.0, 2.0, 3.0, inf, 1.0, 0.0]);
+        assert_eq!(
+            shortest_distances(&graph, graph.from_index(0)), 
+            vec![0.0, 1.0, 1.0, 2.0, 3.0, 2.0, 3.0, 4.0, 4.0, 1.0, 2.0, 5.0]
+        );
+        assert_eq!(
+            shortest_distances(&graph, graph.from_index(1)), 
+            vec![inf, 0.0, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf]
+        );
+        assert_eq!(
+            shortest_distances(&graph, graph.from_index(2)), 
+            vec![inf, 3.0, 0.0, 1.0, 2.0, 1.0, 2.0, 3.0, 3.0, 2.0, 3.0, 4.0]
+        );
+        assert_eq!(
+            shortest_distances(&graph, graph.from_index(3)), 
+            vec![inf, inf, inf, 0.0, 1.0, inf, 4.0, 5.0, 2.0, inf, 4.0, 3.0]
+        );
+        assert_eq!(
+            shortest_distances(&graph, graph.from_index(4)), 
+            vec![inf, inf, inf, 4.0, 0.0, inf, 3.0, 4.0, 1.0, inf, 3.0, 2.0]
+        );
+        assert_eq!(
+            shortest_distances(&graph, graph.from_index(5)), 
+             vec![inf, 2.0, inf, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 1.0, 2.0, 3.0]
+        );
+        assert_eq!(
+            shortest_distances(&graph, graph.from_index(6)), 
+            vec![inf, inf, inf, 1.0, 2.0, inf, 0.0, 1.0, 2.0, inf, 1.0, 2.0]
+        );
+        assert_eq!(
+            shortest_distances(&graph, graph.from_index(7)), 
+            vec![inf, inf, inf, 3.0, 4.0, inf, 2.0, 0.0, 1.0, inf, 2.0, 1.0]
+        );
+        assert_eq!(
+            shortest_distances(&graph, graph.from_index(8)), 
+            vec![inf, inf, inf, 3.0, 4.0, inf, 2.0, 3.0, 0.0, inf, 2.0, 1.0]
+        );
+        assert_eq!(
+            shortest_distances(&graph, graph.from_index(9)), 
+            vec![inf, 1.0, inf, 3.0, 4.0, inf, 2.0, 3.0, 4.0, 0.0, 1.0, 4.0]
+        );
+        assert_eq!(
+            shortest_distances(&graph, graph.from_index(10)), 
+            vec![inf, inf, inf, 2.0, 3.0, inf, 1.0, 2.0, 3.0, inf, 0.0, 3.0]
+        );
+        assert_eq!(
+            shortest_distances(&graph, graph.from_index(11)), 
+            vec![inf, inf, inf, 2.0, 3.0, inf, 1.0, 2.0, 3.0, inf, 1.0, 0.0]
+        );
                 
         let mut graph = Graph::<u8, ()>::new();
         let n0 = graph.add_node(0); let n1 = graph.add_node(1);
@@ -118,12 +143,33 @@ mod tests {
         graph.add_edge(n6, n0, ()); graph.add_edge(n6, n1, ());
         graph.add_edge(n6, n5, ()); graph.add_edge(n2, n5, ()); 
 
-        assert_eq!(shortest_distances(&graph, graph.from_index(0)), vec![0.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0]);
-        assert_eq!(shortest_distances(&graph, graph.from_index(1)), vec![1.0, 0.0, 1.0, 2.0, 2.0, 1.0, 1.0]);
-        assert_eq!(shortest_distances(&graph, graph.from_index(2)), vec![2.0, 1.0, 0.0, 1.0, 2.0, 1.0, 2.0]);
-        assert_eq!(shortest_distances(&graph, graph.from_index(3)), vec![3.0, 2.0, 1.0, 0.0, 1.0, 2.0, 3.0]);
-        assert_eq!(shortest_distances(&graph, graph.from_index(4)), vec![3.0, 2.0, 2.0, 1.0, 0.0, 1.0, 2.0]);
-        assert_eq!(shortest_distances(&graph, graph.from_index(5)), vec![2.0, 1.0, 1.0, 2.0, 1.0, 0.0, 1.0]);
-        assert_eq!(shortest_distances(&graph, graph.from_index(6)), vec![1.0, 1.0, 2.0, 3.0, 2.0, 1.0, 0.0]);
+        assert_eq!(
+            shortest_distances(&graph, graph.from_index(0)), 
+            vec![0.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0]
+        );
+        assert_eq!(
+            shortest_distances(&graph, graph.from_index(1)), 
+            vec![1.0, 0.0, 1.0, 2.0, 2.0, 1.0, 1.0]
+        );
+        assert_eq!(
+            shortest_distances(&graph, graph.from_index(2)), 
+            vec![2.0, 1.0, 0.0, 1.0, 2.0, 1.0, 2.0]
+        );
+        assert_eq!(
+            shortest_distances(&graph, graph.from_index(3)), 
+            vec![3.0, 2.0, 1.0, 0.0, 1.0, 2.0, 3.0]
+        );
+        assert_eq!(
+            shortest_distances(&graph, graph.from_index(4)), 
+            vec![3.0, 2.0, 2.0, 1.0, 0.0, 1.0, 2.0]
+        );
+        assert_eq!(
+            shortest_distances(&graph, graph.from_index(5)), 
+            vec![2.0, 1.0, 1.0, 2.0, 1.0, 0.0, 1.0]
+        );
+        assert_eq!(
+            shortest_distances(&graph, graph.from_index(6)), 
+            vec![1.0, 1.0, 2.0, 3.0, 2.0, 1.0, 0.0]
+        );
     }
 }
