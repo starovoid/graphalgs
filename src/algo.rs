@@ -74,10 +74,10 @@ mod tests {
         graph.add_edge(n7, n11, ()); graph.add_edge(n8, n11, ()); 
         graph.add_edge(n9, n1, ()); graph.add_edge(n9, n10, ());
         graph.add_edge(n10, n6, ()); graph.add_edge(n11, n6, ()); 
-        graph.add_edge(n11, n10, ());
+        graph.add_edge(n11, n10, ()); graph.add_edge(n0, n9, ());
 
         assert_eq!(shortest_distances(&graph, graph.from_index(0)), 
-                   vec![0.0, 1.0, 1.0, 2.0, 3.0, 2.0, 3.0, 4.0, 4.0, 3.0, 4.0, 5.0]);
+                   vec![0.0, 1.0, 1.0, 2.0, 3.0, 2.0, 3.0, 4.0, 4.0, 1.0, 2.0, 5.0]);
         assert_eq!(shortest_distances(&graph, graph.from_index(1)), 
                    vec![inf, 0.0, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf]);
         assert_eq!(shortest_distances(&graph, graph.from_index(2)), 
@@ -107,7 +107,7 @@ mod tests {
         let n4 = graph.add_node(4); let n5 = graph.add_node(5);
         let n6 = graph.add_node(6);
 
-        graph.add_edge(n0, n1, ()); graph.add_edge(n0, n6, ());
+        graph.add_edge(n0, n6, ()); graph.add_edge(n0, n1, ());
         graph.add_edge(n1, n0, ()); graph.add_edge(n1, n2, ());
         graph.add_edge(n1, n5, ()); graph.add_edge(n1, n6, ());
         graph.add_edge(n2, n1, ()); graph.add_edge(n2, n3, ());
