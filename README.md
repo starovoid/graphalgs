@@ -24,4 +24,8 @@ extern crate graphalgs;
 
 ```
 
+## Upcoming plans
+
+In the near future, we plan to implement such graph metrics as the eccentricity of an arbitrary vertex, radius and diameter, as well as finding the center and periphery of the graph, + versions of these algorithms that take into account the weights of edges and vertices. After that, the project will be compiled and released on crates.io under version 0.0.3.
+
 If you have any comments or suggestions, or you suddenly found an error, please write to prototyperailgun@gmail.com.
