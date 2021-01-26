@@ -8,3 +8,5 @@ pub mod spec;
 
 mod shortest_distances;
 pub use shortest_distances::shortest_distances;
+
+pub mod metrics;
