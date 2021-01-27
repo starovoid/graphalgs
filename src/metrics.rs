@@ -58,6 +58,42 @@ where
 }
 
 
+/// Graph diameter.
+/// 
+/// Calculate the diameter of a graph ```graph```. 
+/// Returns ```Option<f32>```, ```None``` will be in case there are no vertices in the graph.
+/// If the graph diameter is infinity, then the result of the algorithm will be ```f32::INFINITY```.
+/// 
+/// # Examples
+/// 
+/// ```
+/// use graphalgs::metrics::diameter;
+/// use petgraph::Graph;
+/// 
+/// let graph = Graph::<(), ()>::from_edges(&[(0, 1), (1, 0), (1, 2)]);
+/// 
+/// assert_eq!(diameter(&graph), Some(f32::INFINITY));
+/// ```
+pub fn diameter<G>(graph: G) -> Option<f32> 
+where 
+    G: Visitable + NodeIndexable + IntoEdges + IntoNeighbors + IntoNodeIdentifiers + NodeCount
+{
+    if graph.node_count() == 0 {
+        return None;
+    }
+
+    let mut diam = 0f32;
+    for i in graph.node_identifiers() {
+        diam = diam.max(eccentricity(graph, i));
+        if diam == f32::INFINITY {
+            break;
+        }
+    }
+
+    Some(diam)
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
