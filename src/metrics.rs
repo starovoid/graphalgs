@@ -184,4 +184,12 @@ mod tests {
         assert_eq!(radius(&graph3()), Some(0.0));
         assert_eq!(radius(&graph4()), None);
     }
+    
+    #[test]
+    fn test_diameter() {
+        assert_eq!(diameter(&graph1()), Some(f32::INFINITY));
+        assert_eq!(diameter(&graph2()), Some(3.0));
+        assert_eq!(diameter(&graph3()), Some(0.0));
+        assert_eq!(diameter(&graph4()), None);
+    }
 }
