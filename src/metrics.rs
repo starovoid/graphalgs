@@ -83,6 +83,10 @@ mod tests {
         graph.add_node(());
         graph
     }
+    
+    fn graph4() -> Graph<(), ()> { 
+        Graph::<(), ()>::new() 
+    }
 
     #[test]
     fn test_eccentricity() {
