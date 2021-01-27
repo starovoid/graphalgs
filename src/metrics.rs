@@ -32,6 +32,7 @@ where
 /// 
 /// Calculate the radius of a graph ```graph```. 
 /// Returns ```Option<f32>```, ```None``` will be in case there are no vertices in the graph.
+/// If the graph radius is infinity, then the result of the algorithm will be ```f32::INFINITY```.
 /// 
 /// # Examples
 /// 
