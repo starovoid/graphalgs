@@ -28,6 +28,35 @@ where
 }
 
 
+/// Graph radius.
+/// 
+/// Calculate the radius of a graph ```graph```. 
+/// Returns ```Option<f32>```, ```None``` will be in case there are no vertices in the graph.
+/// 
+/// # Examples
+/// 
+/// ```
+/// use graphalgs::metrics::radius;
+/// use petgraph::Graph;
+/// 
+/// let graph = Graph::<(), ()>::from_edges(&[(0, 1), (1, 0), (1, 2)]);
+/// 
+/// assert_eq!(radius(&graph), Some(1.0));
+/// ```
+pub fn radius<G>(graph: G) -> Option<f32> 
+where 
+    G: Visitable + NodeIndexable + IntoEdges + IntoNeighbors + IntoNodeIdentifiers + NodeCount
+{
+    if graph.node_count() == 0 {
+        return None;
+    }
+
+    graph.node_identifiers()
+        .map(|i| eccentricity(graph, i))
+        .min_by(|x, y| x.partial_cmp(&y).unwrap())
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
