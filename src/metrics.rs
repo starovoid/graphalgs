@@ -139,4 +139,12 @@ mod tests {
         let g = graph3();
         assert_eq!(eccentricity(&g, 0.into()), 0.0);
     }
+    
+    #[test]
+    fn test_radius() {
+        assert_eq!(radius(&graph1()), Some(5.0));
+        assert_eq!(radius(&graph2()), Some(2.0));
+        assert_eq!(radius(&graph3()), Some(0.0));
+        assert_eq!(radius(&graph4()), None);
+    }
 }
