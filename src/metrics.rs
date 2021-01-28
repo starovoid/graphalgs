@@ -233,4 +233,12 @@ mod tests {
         assert_eq!(diameter(&graph3()), Some(0.0));
         assert_eq!(diameter(&graph4()), None);
     }
+    
+    #[test]
+    fn test_center() {
+        assert_eq!(center(&graph1()), vec![0.into()]);
+        assert_eq!(center(&graph2()), vec![1.into(), 2.into(), 5.into()]);
+        assert_eq!(center(&graph3()), vec![0.into()]);
+        assert_eq!(center(&graph4()), vec![]);
+    }
 }
