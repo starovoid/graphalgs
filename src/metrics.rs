@@ -94,6 +94,47 @@ where
 }
 
 
+/// Central vertices of the graph.
+/// 
+/// Returns a vector of indices of the central vertices of the graph.
+/// If the graph radius is infinity, then the result of the algorithm will be ```vec![]```.
+/// 
+/// # Examples
+/// 
+/// ```
+/// use graphalgs::metrics::center;
+/// use petgraph::Graph;
+/// 
+/// let graph = Graph::<(), ()>::from_edges(&[(0, 1), (1, 0), (1, 2)]);
+/// 
+/// assert_eq!(center(&graph), vec![1.into()]);
+/// ```
+pub fn center<G>(graph: G) -> Vec<G::NodeId>
+where 
+    G: Visitable + NodeIndexable + IntoEdges + IntoNeighbors + IntoNodeIdentifiers + NodeCount
+{   
+    // Vector of vertex eccentricities to avoid repeated computation.
+    let ecc = graph.node_identifiers()
+        .map(|i| eccentricity(graph, i))
+        .collect::<Vec<f32>>();
+    
+    match ecc.iter().min_by(|x, y| x.partial_cmp(&y).unwrap()) {
+        None => vec![],
+        Some(r) => {
+            if *r != f32::INFINITY {
+                graph.node_identifiers()
+                    .enumerate()
+                    .filter(|(i, _)| ecc[*i] == *r)
+                    .map(|(_, node_id)| node_id)
+                    .collect()
+            } else {
+                vec![]
+            }
+        },
+    }
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
