@@ -112,7 +112,7 @@ where
 /// ```
 pub fn center<G>(graph: G) -> Vec<G::NodeId>
 where 
-    G: Visitable + NodeIndexable + IntoEdges + IntoNeighbors + IntoNodeIdentifiers + NodeCount
+    G: Visitable + NodeIndexable + IntoEdges + IntoNodeIdentifiers
 {   
     // Vector of vertex eccentricities to avoid repeated computation.
     let ecc = graph.node_identifiers()
