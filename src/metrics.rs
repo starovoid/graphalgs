@@ -136,6 +136,40 @@ where
 }
 
 
+/// Peripheral graph vertices.
+/// 
+/// Returns a vector of indices of the peripheral vertices of the graph.
+/// 
+/// # Examples
+/// 
+/// ```
+/// use graphalgs::metrics::periphery;
+/// use petgraph::Graph;
+/// 
+/// let graph = Graph::<(), ()>::from_edges(&[(0, 1), (1, 0), (1, 2)]);
+/// 
+/// assert_eq!(periphery(&graph), vec![2.into()]);
+/// ```
+pub fn periphery<G>(graph: G) -> Vec<G::NodeId>
+where 
+    G: Visitable + NodeIndexable + IntoEdges + IntoNodeIdentifiers
+{ 
+    // Vector of vertex eccentricities to avoid repeated computation.
+    let ecc = graph.node_identifiers()
+        .map(|i| eccentricity(graph, i))
+        .collect::<Vec<f32>>();
+    
+    match ecc.iter().max_by(|x, y| x.partial_cmp(&y).unwrap()) {
+        None => vec![],   // There are no vertices in the graph.
+        Some(d) => graph.node_identifiers()
+            .enumerate()
+            .filter(|(i, _)| ecc[*i] == *d)
+            .map(|(_, node_id)| node_id)
+            .collect()
+    }
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
