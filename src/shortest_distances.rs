@@ -5,6 +5,7 @@ use petgraph::visit::{ Visitable, VisitMap, NodeIndexable, IntoEdges, IntoNeighb
 /// The lengths of the shortest paths from the start vertex to all the others.
 /// 
 /// The algorithm is based on BFS, and the path length is equal to the number of edges in this path.
+/// Returns ```Vec<f32>```, the i-th position of which stores the length of the path from the start node to the node with index i.
 /// If it is impossible to get from the vertex x to the vertex y, then the distance from x to y will be equal to f32::INFINITY.
 /// Time complexity: **O(|V| + |E|)**, where **|V|** is the number of vertices, and **|E|** is the number of edges in the graph.
 /// 
