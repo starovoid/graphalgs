@@ -194,6 +194,10 @@ mod tests {
         assert_eq!(floyd_warshall(&graph3(), |edge| *edge.weight()), Err(NegativeCycle(())));
         assert_eq!(floyd_warshall(&graph6(), |edge| *edge.weight()), Err(NegativeCycle(())));
         
+        let mut graph = graph1();
+        graph.add_edge(3.into(), 3.into(), -5.0);
+        assert_eq!(floyd_warshall(&graph, |edge| *edge.weight()), Err(NegativeCycle(())));
+        
         // Edge cases
         assert_eq!(floyd_warshall(&graph4(), |edge| *edge.weight()), Ok(vec![vec![0.0]]));
         assert_eq!(floyd_warshall(&graph5(), |edge| *edge.weight()), Ok(vec![]));
