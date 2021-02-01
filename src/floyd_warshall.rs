@@ -1,3 +1,6 @@
+use std::hash::Hash;
+use std::collections::HashMap;
+
 use petgraph::visit::{ IntoEdgeReferences, NodeIndexable, IntoNodeIdentifiers, EdgeRef };
 pub use petgraph::algo::FloatMeasure;
 
@@ -97,6 +100,60 @@ pub fn floyd_warshall<G, F, K>(graph: G, mut edge_cost: F) -> Result<Vec<Vec<K>>
     }
 
     Ok(dist)
+}
+
+
+/// Convert distance matrix into hashmap.
+/// 
+/// The algorithm takes as input the graph `graph` and the matrix of shortest distances `dist_matrix`, 
+/// where cell **(i, j)** stores the shortest distance from node **i** to node **j**.
+/// 
+/// # Examples
+/// 
+/// ```
+/// use std::collections::HashMap;
+/// use graphalgs::{ floyd_warshall, distance_map };
+/// use petgraph::prelude::NodeIndex;
+/// use petgraph::visit::NodeIndexable;
+/// use petgraph::Graph;
+/// 
+/// let inf = f32::INFINITY;
+/// 
+/// let graph = Graph::<(), f32>::from_edges(&[
+///     (0, 1, 2.0), (1, 2, 10.0), (1, 3, -5.0), 
+///     (3, 2, 2.0), (2, 3, 20.0),
+/// ]);
+/// 
+/// let (n0, n1, n2, n3) = (graph.from_index(0), graph.from_index(1), 
+///                         graph.from_index(2), graph.from_index(3));
+/// 
+/// let true_dist_map: HashMap<(NodeIndex, NodeIndex), f32> = [
+///     ((n0, n0), 0.0), ((n0, n1), 2.0), ((n0, n2), -1.0), ((n0, n3), -3.0), 
+///     ((n1, n0), inf), ((n1, n1), 0.0), ((n1, n2), -3.0), ((n1, n3), -5.0), 
+///     ((n2, n0), inf), ((n2, n1), inf), ((n2, n2), 0.0),  ((n2, n3), 20.0), 
+///     ((n3, n0), inf), ((n3, n1), inf), ((n3, n2), 2.0),  ((n3, n3), 0.0), 
+/// ].iter().cloned().collect();
+/// 
+/// // Get the distance matrix.
+/// let dist_matrix = floyd_warshall(&graph, |edge| *edge.weight()).unwrap();
+/// 
+/// // Convert the distance matrix into hashmap.
+/// assert_eq!(distance_map(&graph, &dist_matrix), true_dist_map);
+/// ```
+pub fn distance_map<G, K>(graph: G, dist_matrix: &Vec<Vec<K>>) -> HashMap<(G::NodeId, G::NodeId), K>
+    where G: NodeIndexable, 
+          G::NodeId: Eq + Hash,
+          K: FloatMeasure,
+{
+    let mut dist_map = HashMap::new();
+
+    for (i, distances) in dist_matrix.iter().enumerate() {
+        for (j, dist) in distances.iter().enumerate() {
+            dist_map.insert((graph.from_index(i), graph.from_index(j)), *dist);
+        }
+    }
+
+    dist_map
 }
 
 
@@ -201,5 +258,37 @@ mod tests {
         // Edge cases
         assert_eq!(floyd_warshall(&graph4(), |edge| *edge.weight()), Ok(vec![vec![0.0]]));
         assert_eq!(floyd_warshall(&graph5(), |edge| *edge.weight()), Ok(vec![]));
+    }
+    
+    #[test]
+    fn test_distance_map() {
+        let graph = graph5();
+        let dist_matrix = floyd_warshall(&graph, |edge| *edge.weight()).unwrap();
+        assert_eq!(distance_map(&graph, &dist_matrix), HashMap::new());
+
+
+        let graph = graph4();
+        let mut true_dist_map = HashMap::new();
+        true_dist_map.insert((graph.from_index(0), graph.from_index(0)), 0.0);
+
+        let dist_matrix = floyd_warshall(&graph, |edge| *edge.weight()).unwrap();
+        assert_eq!(distance_map(&graph, &dist_matrix), true_dist_map);
+
+
+        let graph = graph1();
+        let true_dist_map: HashMap<(NodeIndex, NodeIndex), f32> = [
+            ((0.into(), 0.into()), 0.0), ((0.into(), 1.into()), 33.0), ((0.into(), 2.into()), 52.0), 
+            ((0.into(), 3.into()), 38.0), ((0.into(), 4.into()), 18.0), ((1.into(), 0.into()), 33.0), 
+            ((1.into(), 1.into()), 0.0), ((1.into(), 2.into()), 20.0), ((1.into(), 3.into()), 6.0), 
+            ((1.into(), 4.into()), 15.0), ((2.into(), 0.into()), 52.0), ((2.into(), 1.into()), 20.0), 
+            ((2.into(), 2.into()), 0.0), ((2.into(), 3.into()), 14.0), ((2.into(), 4.into()), 34.0), 
+            ((3.into(), 0.into()), 38.0), ((3.into(), 1.into()), 6.0), ((3.into(), 2.into()), 14.0), 
+            ((3.into(), 3.into()), 0.0), ((3.into(), 4.into()), 20.0), ((4.into(), 0.into()), 18.0), 
+            ((4.into(), 1.into()), 15.0), ((4.into(), 2.into()), 34.0), ((4.into(), 3.into()), 20.0), 
+            ((4.into(), 4.into()), 0.0), 
+        ].iter().cloned().collect();
+        
+        let dist_matrix = floyd_warshall(&graph, |edge| *edge.weight()).unwrap();
+        assert_eq!(distance_map(&graph, &dist_matrix), true_dist_map);
     }
 }
