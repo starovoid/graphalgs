@@ -10,6 +10,6 @@ mod shortest_distances;
 pub use shortest_distances::shortest_distances;
 
 mod floyd_warshall;
-pub use floyd_warshall::{ floyd_warshall, NegativeCycle };
+pub use floyd_warshall::{ floyd_warshall, NegativeCycle, distance_map };
 
 pub mod metrics;
