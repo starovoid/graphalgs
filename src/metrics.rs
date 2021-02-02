@@ -170,6 +170,65 @@ where
 }
 
 
+/// Weighted eccentricity.
+/// 
+/// Calculate the distance to the node farthest from `start`, given the edge weights.
+/// The function is based on the [Bellman-Ford algorithm](https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm)
+/// and has a time complexity of **O(|V|*|E|)**. So if edge weight is not important it is better to use `eccentricity()` function.
+/// 
+/// ## Arguments
+/// * `graph`: weighted graph.
+/// * `start`: node whose eccentricity is to be calculated.
+///
+/// ## Returns
+/// * `Some(G::EdgeWeight)`: the eccentricity.
+/// * `None`: if graph contains negative cycle.
+/// 
+/// # Examples
+/// 
+/// ```
+/// use graphalgs::metrics::weighted_eccentricity;
+/// use petgraph::Graph;
+/// 
+/// let inf = f32::INFINITY;
+/// 
+/// let graph = Graph::<(), f32>::from_edges(&[
+///     (0, 1, 2.0), (1, 2, 10.0), (1, 3, -5.0), 
+///     (3, 2, 2.0), (2, 3, 20.0),
+/// ]);
+/// 
+/// assert_eq!(weighted_eccentricity(&graph, 0.into()), Some(2.0));
+/// assert_eq!(weighted_eccentricity(&graph, 1.into()), Some(inf));
+/// assert_eq!(weighted_eccentricity(&graph, 2.into()), Some(inf));
+/// assert_eq!(weighted_eccentricity(&graph, 3.into()), Some(inf));
+/// 
+/// // Negative cycle.
+/// let graph = Graph::<(), f32>::from_edges(&[
+///     (0, 1, 2.0), (1, 2, 2.0), (2, 0, -10.0)
+/// ]);
+/// 
+/// assert_eq!(weighted_eccentricity(&graph, 0.into()), None);
+/// assert_eq!(weighted_eccentricity(&graph, 1.into()), None);
+/// assert_eq!(weighted_eccentricity(&graph, 2.into()), None);
+/// ```
+pub fn weighted_eccentricity<G>(graph: G, start: G::NodeId) -> Option<G::EdgeWeight>
+where
+    G: NodeCount + IntoNodeIdentifiers + IntoEdges + NodeIndexable,
+    G::EdgeWeight: FloatMeasure,
+{
+    let distances = bellman_ford(graph, start);
+    
+    if distances.is_err() {
+        return None;  // The graph contains a negative cycle.
+    }
+
+    Some(*distances.unwrap().0
+            .iter()
+            .max_by(|x, y| x.partial_cmp(&y).unwrap())
+            .unwrap())
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -229,6 +288,22 @@ mod tests {
     fn graph4() -> Graph<(), ()> { 
         Graph::<(), ()>::new() 
     }
+    
+    fn graph5() -> Graph<(), f32> {
+        let mut graph = Graph::new();
+        let n0 = graph.add_node(()); let n1 = graph.add_node(());
+        let n2 = graph.add_node(()); let n3 = graph.add_node(());
+        let n4 = graph.add_node(()); let n5 = graph.add_node(());
+
+        graph.add_edge(n1, n0, 10.0); graph.add_edge(n1, n0, 10.0);
+        graph.add_edge(n0, n3, 14.0); graph.add_edge(n3, n0, 14.0);
+        graph.add_edge(n1, n2, 5.0); graph.add_edge(n2, n1, -5.0);
+        graph.add_edge(n2, n3, 1.0);  graph.add_edge(n3, n2, 1.0); 
+        graph.add_edge(n2, n4, 3.0);  graph.add_edge(n4, n2, 3.0);
+        graph.add_edge(n3, n5, -1.0);
+
+        graph
+    }
 
     #[test]
     fn test_eccentricity() {
@@ -275,5 +350,33 @@ mod tests {
         assert_eq!(center(&graph2()), vec![1.into(), 2.into(), 5.into()]);
         assert_eq!(center(&graph3()), vec![0.into()]);
         assert_eq!(center(&graph4()), vec![]);
+    }
+    
+    #[test]
+    fn test_periphery() {
+        assert_eq!(
+            periphery(&graph1()), 
+            vec![1.into(), 2.into(), 3.into(), 4.into(), 5.into(), 
+                 6.into(), 7.into(), 8.into(), 9.into(), 10.into(), 11.into()]
+        );
+        assert_eq!(periphery(&graph2()), vec![0.into(), 3.into(), 4.into(), 6.into()]);
+        assert_eq!(periphery(&graph3()), vec![0.into()]);
+        assert_eq!(periphery(&graph4()), vec![]);
+    }
+    
+    #[test]
+    fn test_weighted_eccentricity() {
+        let inf = f32::INFINITY;
+
+        let g = graph3();
+        assert_eq!(weighted_eccentricity(&g, 0.into()), Some(0.0));
+        
+        let graph = graph5();
+        assert_eq!(weighted_eccentricity(&graph, 0.into()), Some(18.0));
+        assert_eq!(weighted_eccentricity(&graph, 1.into()), Some(10.0));
+        assert_eq!(weighted_eccentricity(&graph, 2.into()), Some(5.0));
+        assert_eq!(weighted_eccentricity(&graph, 3.into()), Some(6.0));
+        assert_eq!(weighted_eccentricity(&graph, 4.into()), Some(8.0));
+        assert_eq!(weighted_eccentricity(&graph, 5.into()), Some(inf));
     }
 }
