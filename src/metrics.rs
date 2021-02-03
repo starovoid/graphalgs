@@ -305,6 +305,13 @@ mod tests {
 
         graph
     }
+    
+    fn graph6() -> Graph<(), f32> {
+        let mut graph = Graph::new();
+        graph.add_node(()); graph.add_node(());
+
+        graph
+    }
 
     #[test]
     fn test_eccentricity() {
@@ -331,18 +338,26 @@ mod tests {
     
     #[test]
     fn test_radius() {
+        let inf = f32::INFINITY;
+        
         assert_eq!(radius(&graph1()), Some(5.0));
         assert_eq!(radius(&graph2()), Some(2.0));
         assert_eq!(radius(&graph3()), Some(0.0));
         assert_eq!(radius(&graph4()), None);
+        assert_eq!(radius(&graph5()), Some(2.0));
+        assert_eq!(radius(&graph6()), Some(inf));
     }
     
     #[test]
     fn test_diameter() {
-        assert_eq!(diameter(&graph1()), Some(f32::INFINITY));
+        let inf = f32::INFINITY;
+        
+        assert_eq!(diameter(&graph1()), Some(inf));
         assert_eq!(diameter(&graph2()), Some(3.0));
         assert_eq!(diameter(&graph3()), Some(0.0));
         assert_eq!(diameter(&graph4()), None);
+        assert_eq!(diameter(&graph5()), Some(inf));
+        assert_eq!(diameter(&graph6()), Some(inf));
     }
     
     #[test]
