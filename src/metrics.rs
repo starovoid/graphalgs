@@ -366,6 +366,8 @@ mod tests {
         assert_eq!(center(&graph2()), vec![1.into(), 2.into(), 5.into()]);
         assert_eq!(center(&graph3()), vec![0.into()]);
         assert_eq!(center(&graph4()), vec![]);
+        assert_eq!(center(&graph5()), vec![2.into(), 3.into()]);
+        assert_eq!(center(&graph6()), vec![]);
     }
     
     #[test]
@@ -378,6 +380,8 @@ mod tests {
         assert_eq!(periphery(&graph2()), vec![0.into(), 3.into(), 4.into(), 6.into()]);
         assert_eq!(periphery(&graph3()), vec![0.into()]);
         assert_eq!(periphery(&graph4()), vec![]);
+        assert_eq!(periphery(&graph5()), vec![5.into()]);
+        assert_eq!(periphery(&graph6()), vec![0.into(), 1.into()]);
     }
     
     #[test]
