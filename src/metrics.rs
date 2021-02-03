@@ -293,6 +293,74 @@ where
 }
 
 
+/// Weighted graph diameter.
+/// 
+/// Calculate the diameter of the graph given the edge weights. 
+/// The function is based on the [Floyd–Warshall algorithm](https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm)
+/// and has a time complexity of **O(|V|^3)**. 
+/// So if edge weights is not important it is better to use `diameter()` function.
+/// 
+/// ## Arguments
+/// * `graph`: weighted graph.
+/// * `edge_cost`: closure that returns weight of a particular edge.
+///
+/// ## Returns
+/// * `Some`: the diameter of the graph. 
+/// * `None`: if the graph contains a negative cycle or has no vertices.
+/// 
+/// # Examples
+/// 
+/// ```
+/// use graphalgs::metrics::weighted_diameter;
+/// use petgraph::Graph;
+/// 
+/// let inf = f32::INFINITY;
+/// 
+/// let graph = Graph::<(), f32>::from_edges(&[
+///     (0, 1, 2.0), (1, 2, 10.0), (1, 3, -5.0), 
+///     (3, 2, 2.0), (2, 3, 20.0),
+/// ]);
+/// 
+/// assert_eq!(weighted_diameter(&graph, |edge| *edge.weight()), Some(inf));
+/// 
+/// // Negative cycle.
+/// let graph = Graph::<(), f32>::from_edges(&[
+///     (0, 1, 2.0), (1, 2, 2.0), (2, 0, -10.0)
+/// ]);
+/// 
+/// assert_eq!(weighted_diameter(&graph, |edge| *edge.weight()), None);
+/// ```
+pub fn weighted_diameter<G, F, K>(graph: G, edge_cost: F) -> Option<K>
+where
+    G: IntoEdgeReferences + IntoNodeIdentifiers + NodeIndexable + NodeCount,
+    F: FnMut(G::EdgeRef) -> K,
+    K: FloatMeasure,
+{
+    if graph.node_count() == 0 {
+        return None;
+    }
+
+    let distances = floyd_warshall(graph, edge_cost);
+
+    if distances.is_err() {
+        return None;  // The graph contains a negative cycle.
+    }
+
+    let mut diam = K::zero();
+    for dist in distances.unwrap().iter() {
+        for d in dist.iter() {
+            if *d == K::infinite() {
+                return Some(*d);
+            } else if *d > diam {
+                diam = *d;
+            }
+        }
+    }
+
+    Some(diam)
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -473,5 +541,17 @@ mod tests {
         assert_eq!(weighted_radius(&graph4(), |edge| *edge.weight()), None);
         assert_eq!(weighted_radius(&graph5(), |edge| *edge.weight()), Some(5.0));
         assert_eq!(weighted_radius(&graph6(), |edge| *edge.weight()), Some(inf));
+    }
+    
+    #[test]
+    fn test_weighted_diameter() {
+        let inf = f32::INFINITY;
+        
+        assert_eq!(weighted_diameter(&graph1(), |_| 1.0), Some(inf));
+        assert_eq!(weighted_diameter(&graph2(), |_| 2.0), Some(6.0));
+        assert_eq!(weighted_diameter(&graph3(), |edge| *edge.weight()), Some(0.0));
+        assert_eq!(weighted_diameter(&graph4(), |edge| *edge.weight()), None);
+        assert_eq!(weighted_diameter(&graph5(), |edge| *edge.weight()), Some(inf));
+        assert_eq!(weighted_diameter(&graph6(), |edge| *edge.weight()), Some(inf));
     }
 }
