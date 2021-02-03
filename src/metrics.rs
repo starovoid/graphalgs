@@ -1,6 +1,9 @@
-use crate::shortest_distances;
-use petgraph::visit::{ Visitable, NodeIndexable, IntoEdges, IntoNeighbors, IntoNodeIdentifiers, NodeCount };
+use petgraph::visit::{ 
+    Visitable, NodeIndexable, IntoEdges, IntoEdgeReferences, 
+    IntoNeighbors, IntoNodeIdentifiers, NodeCount, 
+};
 use petgraph::algo::{ FloatMeasure, bellman_ford };
+use crate::{ shortest_distances, floyd_warshall };
 
 /// Vertex eccentricity.
 /// 
@@ -230,6 +233,66 @@ where
 }
 
 
+/// Weighted graph radius.
+/// 
+/// Calculate the radius of the graph given the edge weights. 
+/// The function is based on the [Floyd–Warshall algorithm](https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm)
+/// and has a time complexity of **O(|V|^3)**. 
+/// So if edge weights is not important it is better to use `radius()` function.
+/// 
+/// ## Arguments
+/// * `graph`: weighted graph.
+/// * `edge_cost`: closure that returns weight of a particular edge.
+///
+/// ## Returns
+/// * `Some`: the radius of the graph. 
+/// * `None`: if the graph contains a negative cycle or has no vertices.
+/// 
+/// # Examples
+/// 
+/// ```
+/// use graphalgs::metrics::weighted_radius;
+/// use petgraph::Graph;
+/// 
+/// let inf = f32::INFINITY;
+/// 
+/// let graph = Graph::<(), f32>::from_edges(&[
+///     (0, 1, 2.0), (1, 2, 10.0), (1, 3, -5.0), 
+///     (3, 2, 2.0), (2, 3, 20.0),
+/// ]);
+/// 
+/// assert_eq!(weighted_radius(&graph, |edge| *edge.weight()), Some(2.0));
+/// 
+/// // Negative cycle.
+/// let graph = Graph::<(), f32>::from_edges(&[
+///     (0, 1, 2.0), (1, 2, 2.0), (2, 0, -10.0)
+/// ]);
+/// 
+/// assert_eq!(weighted_radius(&graph, |edge| *edge.weight()), None);
+/// ```
+pub fn weighted_radius<G, F, K>(graph: G, edge_cost: F) -> Option<K>
+where
+    G: IntoEdgeReferences + IntoNodeIdentifiers + NodeIndexable + NodeCount,
+    F: FnMut(G::EdgeRef) -> K,
+    K: FloatMeasure,
+{
+    if graph.node_count() == 0 {
+        return None;
+    }
+
+    let distances = floyd_warshall(graph, edge_cost);
+
+    if distances.is_err() {
+        return None;  // The graph contains a negative cycle.
+    }
+
+    distances.unwrap()
+        .iter()
+        .map(|dist| *dist.iter().max_by(|x, y| x.partial_cmp(&y).unwrap()).unwrap())
+        .min_by(|x, y| x.partial_cmp(&y).unwrap())
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -398,5 +461,17 @@ mod tests {
         assert_eq!(weighted_eccentricity(&graph, 3.into()), Some(6.0));
         assert_eq!(weighted_eccentricity(&graph, 4.into()), Some(8.0));
         assert_eq!(weighted_eccentricity(&graph, 5.into()), Some(inf));
+    }
+    
+    #[test]
+    fn test_weighted_radius() {
+        let inf = f32::INFINITY;
+        
+        assert_eq!(weighted_radius(&graph1(), |_| 1.0), Some(5.0));
+        assert_eq!(weighted_radius(&graph2(), |_| 2.0), Some(4.0));
+        assert_eq!(weighted_radius(&graph3(), |edge| *edge.weight()), Some(0.0));
+        assert_eq!(weighted_radius(&graph4(), |edge| *edge.weight()), None);
+        assert_eq!(weighted_radius(&graph5(), |edge| *edge.weight()), Some(5.0));
+        assert_eq!(weighted_radius(&graph6(), |edge| *edge.weight()), Some(inf));
     }
 }
