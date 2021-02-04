@@ -160,9 +160,9 @@ where
     
     match ecc.iter().max_by(|x, y| x.partial_cmp(&y).unwrap()) {
         None => vec![],   // There are no vertices in the graph.
-        Some(d) => graph.node_identifiers()
+        Some(&d) => graph.node_identifiers()
             .enumerate()
-            .filter(|(i, _)| ecc[*i] == *d)
+            .filter(|(i, _)| ecc[*i] == d)
             .map(|(_, node_id)| node_id)
             .collect()
     }
