@@ -249,8 +249,6 @@ where
 /// use graphalgs::metrics::weighted_radius;
 /// use petgraph::Graph;
 /// 
-/// let inf = f32::INFINITY;
-/// 
 /// let graph = Graph::<(), f32>::from_edges(&[
 ///     (0, 1, 2.0), (1, 2, 10.0), (1, 3, -5.0), 
 ///     (3, 2, 2.0), (2, 3, 20.0),
@@ -374,8 +372,6 @@ where
 /// ```
 /// use graphalgs::metrics::weighted_center;
 /// use petgraph::Graph;
-/// 
-/// let inf = f32::INFINITY;
 /// 
 /// let graph = Graph::<(), f32>::from_edges(&[
 ///     (0, 1, 2.0), (1, 2, 10.0), (1, 3, -5.0), 
