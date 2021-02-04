@@ -102,7 +102,6 @@ where
 /// 
 /// Returns a vector of indices of the central vertices of the graph.
 /// Here, the central vertices are the vertices with the minimum eccentricity.
-/// If the graph radius is infinity, then the result of the algorithm will be ```vec![]```.
 /// 
 /// # Examples
 /// 
