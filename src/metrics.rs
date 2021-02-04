@@ -125,16 +125,12 @@ where
     
     match ecc.iter().min_by(|x, y| x.partial_cmp(&y).unwrap()) {
         None => vec![],
-        Some(r) => {
-            if *r != f32::INFINITY {
-                graph.node_identifiers()
-                    .enumerate()
-                    .filter(|(i, _)| ecc[*i] == *r)
-                    .map(|(_, node_id)| node_id)
-                    .collect()
-            } else {
-                vec![]
-            }
+        Some(&r) => {
+            graph.node_identifiers()
+                .enumerate()
+                .filter(|(i, _)| ecc[*i] == r)
+                .map(|(_, node_id)| node_id)
+                .collect()
         },
     }
 }
@@ -498,7 +494,7 @@ mod tests {
         assert_eq!(center(&graph3()), vec![0.into()]);
         assert_eq!(center(&graph4()), vec![]);
         assert_eq!(center(&graph5()), vec![2.into(), 3.into()]);
-        assert_eq!(center(&graph6()), vec![]);
+        assert_eq!(center(&graph6()), vec![0.into(), 1.into()]);
     }
     
     #[test]
