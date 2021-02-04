@@ -419,6 +419,71 @@ where
 }
 
 
+/// Peripheral vertices of a weighted graph.
+/// 
+/// Calculate the peripheral vertices of the graph given the edge weights. 
+/// The function is based on the [Floyd–Warshall algorithm](https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm)
+/// and has a time complexity of **O(|V|^3)**. 
+/// So if edge weights is not important it is better to use `periphery()` function.
+/// 
+/// ## Arguments
+/// * `graph`: weighted graph.
+/// * `edge_cost`: closure that returns weight of a particular edge.
+///
+/// ## Returns
+/// * A vector of indices of peripheral vertices.
+/// * `vec![]`: if the graph contains a negative cycle.
+/// 
+/// ```
+/// use graphalgs::metrics::weighted_periphery;
+/// use petgraph::Graph;
+/// 
+/// let graph = Graph::<(), f32>::from_edges(&[
+///     (0, 1, 2.0), (1, 2, 10.0), (1, 3, -5.0), 
+///     (3, 2, 2.0), (2, 3, 20.0), (3, 0, 3.0),
+/// ]);
+/// 
+/// assert_eq!(weighted_periphery(&graph, |edge| *edge.weight()), vec![2.into()]);
+/// 
+/// // Negative cycle.
+/// let graph = Graph::<(), f32>::from_edges(&[
+///     (0, 1, 2.0), (1, 2, 2.0), (2, 0, -10.0)
+/// ]);
+/// 
+/// assert_eq!(weighted_periphery(&graph, |edge| *edge.weight()), vec![]);
+/// ```
+pub fn weighted_periphery<G, F, K>(graph: G, edge_cost: F) -> Vec<G::NodeId>
+where
+    G: IntoEdgeReferences + IntoNodeIdentifiers + NodeIndexable + NodeCount,
+    F: FnMut(G::EdgeRef) -> K,
+    K: FloatMeasure,
+{
+    if graph.node_count() == 0 {
+        return vec![];
+    }
+
+    let distances = floyd_warshall(graph, edge_cost);
+
+    if distances.is_err() {
+        return vec![];  // The graph contains a negative cycle.
+    }
+    
+    // Vector of node eccentricities.
+    let ecc = distances.unwrap()
+        .iter()
+        .map(|dist| *dist.iter().max_by(|x, y| x.partial_cmp(&y).unwrap()).unwrap())
+        .collect::<Vec<K>>();
+    
+    // Graph diameter.
+    let diam = *ecc.iter().max_by(|x, y| x.partial_cmp(&y).unwrap()).unwrap();
+    
+    (0..graph.node_bound())
+        .filter(|i| ecc[*i] == diam)
+        .map(|i| graph.from_index(i))
+        .collect()
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -621,5 +686,19 @@ mod tests {
         assert_eq!(weighted_center(&graph4(), |edge| *edge.weight()), vec![]);
         assert_eq!(weighted_center(&graph5(), |edge| *edge.weight()), vec![2.into()]);
         assert_eq!(weighted_center(&graph6(), |edge| *edge.weight()), vec![0.into(), 1.into()]);
+    }
+    
+    #[test]
+    fn test_weighted_periphery() {
+        assert_eq!(
+            weighted_periphery(&graph1(), |_| 1.0), 
+            vec![1.into(), 2.into(), 3.into(), 4.into(), 5.into(), 
+                 6.into(), 7.into(), 8.into(), 9.into(), 10.into(), 11.into()]
+        );
+        assert_eq!(weighted_periphery(&graph2(), |_| 2.0), vec![0.into(), 3.into(), 4.into(), 6.into()]);
+        assert_eq!(weighted_periphery(&graph3(), |edge| *edge.weight()), vec![0.into()]);
+        assert_eq!(weighted_periphery(&graph4(), |edge| *edge.weight()), vec![]);
+        assert_eq!(weighted_periphery(&graph5(), |edge| *edge.weight()), vec![5.into()]);
+        assert_eq!(weighted_periphery(&graph6(), |edge| *edge.weight()), vec![0.into(), 1.into()]);
     }
 }
