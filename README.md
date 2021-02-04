@@ -14,7 +14,7 @@
 
 ## Stage of development
 
-<p>This is a pre-alpha stage of development, published mainly to take a name on crates.io. All code changes will occur on github without updating the crate until the product is ready to release the alpha version.</p>
+<p>Version 0.3.0 is the first release of the library already with a decent number of algorithms. At this stage of development, it is especially important for us to have feedback to resolve possible misunderstandings in terms of or to improve existing implementations of algorithms in order to develop a stable library style.</p>
 
 ## Usage
 
@@ -24,8 +24,4 @@ extern crate graphalgs;
 
 ```
 
-## Upcoming plans
-
-In the near future, we plan to implement such graph metrics as the eccentricity of an arbitrary vertex, radius and diameter, as well as finding the center and periphery of the graph, + versions of these algorithms that take into account the weights of edges and vertices. After that, the project will be compiled and released on crates.io under version 0.0.3.
-
-If you have any comments or suggestions, or you suddenly found an error, please write to prototyperailgun@gmail.com.
+If you have any comments or suggestions, or you suddenly found an error, please write to prototyperailgun@gmail.com or start  a new issue or pool request.
