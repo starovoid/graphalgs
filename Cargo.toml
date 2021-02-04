@@ -1,6 +1,6 @@
 [package]
 name = "graphalgs"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["PrototypeRailGun <52821033+PrototypeRailGun@users.noreply.github.com>"]
 edition = "2018"
 license = "MIT"
@@ -16,4 +16,4 @@ bench = false
 
 [dependencies]
 petgraph = "0.5.1"
-nalgebra = "0.23.2"
+nalgebra = "0.24.1"
