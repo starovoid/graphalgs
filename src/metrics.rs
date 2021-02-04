@@ -356,6 +356,73 @@ where
 }
 
 
+/// Center of a weighted graph.
+/// 
+/// Calculate the central nodes of the graph given the edge weights. 
+/// The function is based on the [Floyd–Warshall algorithm](https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm)
+/// and has a time complexity of **O(|V|^3)**. 
+/// So if edge weights is not important it is better to use `center()` function.
+/// 
+/// ## Arguments
+/// * `graph`: weighted graph.
+/// * `edge_cost`: closure that returns weight of a particular edge.
+///
+/// ## Returns
+/// * A vector of indices of central vertices.
+/// * `vec![]`: if the graph contains a negative cycle.
+/// 
+/// ```
+/// use graphalgs::metrics::weighted_center;
+/// use petgraph::Graph;
+/// 
+/// let inf = f32::INFINITY;
+/// 
+/// let graph = Graph::<(), f32>::from_edges(&[
+///     (0, 1, 2.0), (1, 2, 10.0), (1, 3, -5.0), 
+///     (3, 2, 2.0), (2, 3, 20.0), (3, 0, 3.0),
+/// ]);
+/// 
+/// assert_eq!(weighted_center(&graph, |edge| *edge.weight()), vec![1.into()]);
+/// 
+/// // Negative cycle.
+/// let graph = Graph::<(), f32>::from_edges(&[
+///     (0, 1, 2.0), (1, 2, 2.0), (2, 0, -10.0)
+/// ]);
+/// 
+/// assert_eq!(weighted_center(&graph, |edge| *edge.weight()), vec![]);
+/// ```
+pub fn weighted_center<G, F, K>(graph: G, edge_cost: F) -> Vec<G::NodeId>
+where
+    G: IntoEdgeReferences + IntoNodeIdentifiers + NodeIndexable + NodeCount,
+    F: FnMut(G::EdgeRef) -> K,
+    K: FloatMeasure,
+{
+    if graph.node_count() == 0 {
+        return vec![];
+    }
+
+    let distances = floyd_warshall(graph, edge_cost);
+
+    if distances.is_err() {
+        return vec![];  // The graph contains a negative cycle.
+    }
+    
+    // Vector of node eccentricities.
+    let ecc = distances.unwrap()
+        .iter()
+        .map(|dist| *dist.iter().max_by(|x, y| x.partial_cmp(&y).unwrap()).unwrap())
+        .collect::<Vec<K>>();
+    
+    // Graph radius.
+    let rad = *ecc.iter().min_by(|x, y| x.partial_cmp(&y).unwrap()).unwrap();
+    
+    (0..graph.node_bound())
+        .filter(|i| ecc[*i] == rad)
+        .map(|i| graph.from_index(i))
+        .collect()
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -548,5 +615,15 @@ mod tests {
         assert_eq!(weighted_diameter(&graph4(), |edge| *edge.weight()), None);
         assert_eq!(weighted_diameter(&graph5(), |edge| *edge.weight()), Some(inf));
         assert_eq!(weighted_diameter(&graph6(), |edge| *edge.weight()), Some(inf));
+    }
+    
+    #[test]
+    fn test_weighted_center() {
+        assert_eq!(weighted_center(&graph1(), |_| 1.0), vec![0.into()]);
+        assert_eq!(weighted_center(&graph2(), |_| 2.0), vec![1.into(), 2.into(), 5.into()]);
+        assert_eq!(weighted_center(&graph3(), |edge| *edge.weight()), vec![0.into()]);
+        assert_eq!(weighted_center(&graph4(), |edge| *edge.weight()), vec![]);
+        assert_eq!(weighted_center(&graph5(), |edge| *edge.weight()), vec![2.into()]);
+        assert_eq!(weighted_center(&graph6(), |edge| *edge.weight()), vec![0.into(), 1.into()]);
     }
 }
