@@ -45,3 +45,6 @@ mod floyd_warshall;
 pub use floyd_warshall::{ floyd_warshall, NegativeCycle, distance_map };
 
 pub mod metrics;
+
+pub mod traits;
+pub mod tournament;
