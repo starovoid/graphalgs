@@ -9,36 +9,36 @@ use petgraph::csr::Csr;
 
 /// Graph with known number of edges.
 pub trait EdgeCount {
-    fn number_of_edges(&self) -> usize;
+    fn number_of_edges(self) -> usize;
 }
 
 
 impl<'a, N: 'a, E: 'a, Ty: EdgeType, Ix: IndexType> EdgeCount for &'a Graph<N, E, Ty, Ix> {
-    fn number_of_edges(&self) -> usize {
+    fn number_of_edges(self) -> usize {
         self.edge_count()
     }
 }
 
 impl<'a, N: 'a, E: 'a, Ty: EdgeType, Ix: IndexType> EdgeCount for &'a StableGraph<N, E, Ty, Ix> {
-    fn number_of_edges(&self) -> usize {
+    fn number_of_edges(self) -> usize {
         self.edge_count()
     }
 }
 
 impl<'a, N: 'a + NodeTrait, E: 'a, Ty: EdgeType> EdgeCount for &'a GraphMap<N, E, Ty> {
-    fn number_of_edges(&self) -> usize {
+    fn number_of_edges(self) -> usize {
         self.edge_count()
     }
 }
 
 impl<'a, N: 'a, E: 'a, Ty: EdgeType> EdgeCount for &'a MatrixGraph<N, E, Ty> {
-    fn number_of_edges(&self) -> usize {
+    fn number_of_edges(self) -> usize {
         self.edge_count()
     }
 }
 
 impl<'a, N: 'a, E: 'a, Ty: EdgeType> EdgeCount for &'a Csr<N, E, Ty> {
-    fn number_of_edges(&self) -> usize {
+    fn number_of_edges(self) -> usize {
         self.edge_count()
     }
 }
