@@ -154,6 +154,7 @@ mod tests {
     use petgraph::graphmap::GraphMap;
     use petgraph::matrix_graph::MatrixGraph;
     use petgraph::csr::Csr;
+    use petgraph::matrix_graph::UnMatrix;
 
     fn graph1() -> Graph<(), ()> {
         let mut graph = Graph::new();
@@ -175,6 +176,7 @@ mod tests {
         graph.add_edge(n2, n1, ());
         graph
     }
+
     fn graph3() -> Graph<(), ()> {
         Graph::<(), ()>::from_edges(&[
             (0, 2), (1, 0), (1, 2), 
@@ -218,18 +220,18 @@ mod tests {
         let n2 = graph.add_node(2);
         graph.add_edge(n0, n1, 1);
         graph.add_edge(n1, n2, 3);
-        graph.add_edge(n2, n0, 2);
+        graph.add_edge(n0, n2, 2);
         graph
     }
 
-    fn matrix_graph_tour() -> MatrixGraph<(), i32> {
-        let mut graph = MatrixGraph::new();
+    fn matrix_graph_tour() -> UnMatrix<(), i32> {
+        let mut graph = MatrixGraph::new_undirected();
         let n0 = graph.add_node(());
         let n1 = graph.add_node(());
         let n2 = graph.add_node(());
         graph.add_edge(n0, n1, 0);
         graph.add_edge(n1, n2, 1);
-        graph.add_edge(n2, n0, 2);
+        graph.add_edge(n0, n2, 2);
         graph
     }
 
@@ -238,9 +240,13 @@ mod tests {
         let n0 = graph.add_node(());
         let n1 = graph.add_node(());
         let n2 = graph.add_node(());
+        let n3 = graph.add_node(());
         graph.add_edge(n0, n1, 0);
-        graph.add_edge(n1, n2, 1);
-        graph.add_edge(n2, n0, 2);
+        graph.add_edge(n0, n2, 2);
+        graph.add_edge(n0, n3, 3);
+        graph.add_edge(n1, n2, 3);
+        graph.add_edge(n1, n3, 4);
+        graph.add_edge(n2, n3, 5);
         graph
     }
     
@@ -257,7 +263,7 @@ mod tests {
         assert!(is_tournament(&matrix_graph_tour()));
         assert!(is_tournament(&csr_tour()));
     }
-    
+
     #[test]
     fn test_random_tournament() {
         assert_eq!(random_tournament(0), vec![]);
@@ -265,5 +271,20 @@ mod tests {
         for i in 2..100 {
             assert!(is_tournament(&Graph::<(), (), Directed, usize>::from_edges(random_tournament(i))));
         }
+    }
+    
+    #[test]
+    fn test_is_tournament_transitive() {
+        assert!(!is_tournament_transitive(&graph_tour()));
+        assert!(!is_tournament_transitive(&stable_graph_tour()));
+        assert!(is_tournament_transitive(&graphmap_tour()));
+        assert!(is_tournament_transitive(&matrix_graph_tour()));
+        assert!(is_tournament_transitive(&csr_tour()));
+        assert!(is_tournament_transitive(&Graph::<(), (), Directed, usize>::from_edges(random_tournament(2))));
+
+        let mut graph = Graph::<(), ()>::new();
+        assert!(is_tournament_transitive(&graph));
+        graph.add_node(());
+        assert!(is_tournament_transitive(&graph));
     }
 }
