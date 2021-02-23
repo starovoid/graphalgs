@@ -13,31 +13,31 @@ pub trait EdgeCount {
 }
 
 
-impl<'a, N: 'a, E: 'a> EdgeCount for &'a Graph<N, E> {
+impl<'a, N: 'a, E: 'a, Ty: EdgeType> EdgeCount for &'a Graph<N, E, Ty> {
     fn number_of_edges(&self) -> usize {
         self.edge_count()
     }
 }
 
-impl<'a, N: 'a, E: 'a>  EdgeCount for &'a StableGraph<N, E> {
+impl<'a, N: 'a, E: 'a, Ty: EdgeType> EdgeCount for &'a StableGraph<N, E, Ty> {
     fn number_of_edges(&self) -> usize {
         self.edge_count()
     }
 }
 
-impl<'a, N: 'a + NodeTrait, E: 'a, Ty: 'a + EdgeType> EdgeCount for &'a GraphMap<N, E, Ty> {
+impl<'a, N: 'a + NodeTrait, E: 'a, Ty: EdgeType> EdgeCount for &'a GraphMap<N, E, Ty> {
     fn number_of_edges(&self) -> usize {
         self.edge_count()
     }
 }
 
-impl<'a, N: 'a, E: 'a>  EdgeCount for &'a MatrixGraph<N, E> {
+impl<'a, N: 'a, E: 'a, Ty: EdgeType> EdgeCount for &'a MatrixGraph<N, E, Ty> {
     fn number_of_edges(&self) -> usize {
         self.edge_count()
     }
 }
 
-impl<'a, N: 'a, E: 'a>  EdgeCount for &'a Csr<N, E> {
+impl<'a, N: 'a, E: 'a, Ty: EdgeType> EdgeCount for &'a Csr<N, E, Ty> {
     fn number_of_edges(&self) -> usize {
         self.edge_count()
     }
