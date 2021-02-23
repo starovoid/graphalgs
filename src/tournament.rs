@@ -98,6 +98,53 @@ pub fn random_tournament(n: usize) -> Vec<(usize, usize)> {
 }
 
 
+/// Is the tournament transitive?
+/// 
+/// Check if the tournament is transitive and return the corresponding boolean value.
+/// 
+/// # Examples
+/// 
+/// ```
+/// use graphalgs::tournament::is_tournament_transitive;
+/// use petgraph::Graph;
+/// 
+/// let graph = Graph::<(), ()>::from_edges(&[
+///     (0, 1), (0, 2), (0, 3), 
+///     (1, 2), (1, 3), (2, 3),
+/// ]);
+/// assert!(is_tournament_transitive(&graph));
+/// 
+/// let graph = Graph::<(), ()>::from_edges(&[
+///     (0, 2), (1, 0), (1, 2), 
+///     (3, 0), (3, 1), (2, 3),
+/// ]);
+/// assert!(!is_tournament_transitive(&graph));
+/// ```
+pub fn is_tournament_transitive<G>(graph: G) -> bool
+where 
+    G: IntoEdgeReferences + NodeCount + EdgeCount + IntoNodeIdentifiers,
+    G::NodeId: Eq + Hash,
+{
+    let mut edges: HashSet<(G::NodeId, G::NodeId)> = HashSet::with_capacity(graph.number_of_edges());
+    edges.extend(graph.edge_references().map(|edge|(edge.source(), edge.target())));
+
+    for x in graph.node_identifiers() {
+        for y in graph.node_identifiers() {
+            if x != y {
+                for z in graph.node_identifiers() {
+                    if z != y && z != x && edges.contains(&(x, y)) &&
+                            edges.contains(&(y, z)) && edges.contains(&(z, x)) {
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+
+    true
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
