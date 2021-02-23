@@ -3,6 +3,8 @@
 
 use std::hash::Hash;
 use std::collections::HashSet;
+use rand::Rng;
+
 use petgraph::visit::{EdgeRef, IntoEdgeReferences, NodeCount };
 use crate::traits::EdgeCount;
 
@@ -58,6 +60,41 @@ where
     }
 
     true
+}
+
+
+/// Random tournament on n vertices.
+/// 
+/// Returns a vector of edges `Vec<(usize, usize)>`.
+/// 
+/// # Examples
+/// 
+/// ```
+/// use graphalgs::tournament::{ random_tournament, is_tournament };
+/// use petgraph::{ Graph, Directed };
+/// 
+/// let graph: Graph::<(), (), Directed, usize> = Graph::from_edges(random_tournament(4));
+/// assert!(is_tournament(&graph));
+/// ```
+pub fn random_tournament(n: usize) -> Vec<(usize, usize)> {
+    if n == 0 {
+        return vec![];
+    }
+
+    let mut rng = rand::thread_rng();
+    let mut edges = Vec::with_capacity(n*(n-1)/2);
+
+    for i in 0..n-1 {
+        for j in i+1..n {
+            if rng.gen::<bool>() {
+                edges.push((i, j));
+            } else {
+                edges.push((j, i));
+            }
+        }
+    }
+
+    edges
 }
 
 
@@ -172,5 +209,14 @@ mod tests {
         assert!(is_tournament(&graphmap_tour()));
         assert!(is_tournament(&matrix_graph_tour()));
         assert!(is_tournament(&csr_tour()));
+    }
+    
+    #[test]
+    fn test_random_tournament() {
+        assert_eq!(random_tournament(0), vec![]);
+        assert_eq!(random_tournament(1), vec![]);
+        for i in 2..100 {
+            assert!(is_tournament(&Graph::<(), (), Directed, usize>::from_edges(random_tournament(i))));
+        }
     }
 }
