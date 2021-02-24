@@ -5,7 +5,7 @@ use std::hash::Hash;
 use std::collections::HashSet;
 use rand::Rng;
 
-use petgraph::visit::{EdgeRef, IntoEdgeReferences, NodeCount };
+use petgraph::visit::{EdgeRef, IntoEdgeReferences, NodeCount, IntoNodeIdentifiers };
 use crate::traits::EdgeCount;
 
 

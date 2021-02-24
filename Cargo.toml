@@ -17,3 +17,4 @@ bench = false
 [dependencies]
 petgraph = "0.5.1"
 nalgebra = "0.24.1"
+rand = "0.8.3"

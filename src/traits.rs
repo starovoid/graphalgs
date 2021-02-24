@@ -1,6 +1,7 @@
 //! Some useful traits missing in petgraph.
 
-use petgraph::{ Graph, EdgeType };
+use petgraph::EdgeType;
+use petgraph::graph::{ Graph, IndexType };
 use petgraph::stable_graph::StableGraph;
 use petgraph::graphmap::{ GraphMap, NodeTrait };
 use petgraph::matrix_graph::MatrixGraph;

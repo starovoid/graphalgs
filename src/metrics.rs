@@ -534,14 +534,14 @@ mod tests {
         graph
     }
 
-    fn graph3() -> Graph<(), ()> {
-        let mut graph = Graph::<(), ()>::new();
+    fn graph3() -> Graph<(), f32> {
+        let mut graph = Graph::<(), f32>::new();
         graph.add_node(());
         graph
     }
     
-    fn graph4() -> Graph<(), ()> { 
-        Graph::<(), ()>::new() 
+    fn graph4() -> Graph<(), f32> { 
+        Graph::<(), f32>::new() 
     }
     
     fn graph5() -> Graph<(), f32> {

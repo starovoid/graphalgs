@@ -160,7 +160,7 @@ pub fn distance_map<G, K>(graph: G, dist_matrix: &Vec<Vec<K>>) -> HashMap<(G::No
 #[cfg(test)]
 mod tests {
     use super::*;
-    use petgraph::graph::Graph;
+    use petgraph::graph::{ Graph, NodeIndex };
 
     fn graph1() -> Graph<(), f32> {
         let mut graph = Graph::<(), f32>::new();
