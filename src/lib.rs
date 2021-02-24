@@ -3,7 +3,7 @@
 //! # Examples
 //! 
 //! ```
-//! use graphalgs::floyd_warshall;
+//! use graphalgs::shortest_path::floyd_warshall;
 //! use graphalgs::metrics::{ weighted_radius, weighted_diameter };
 //! use petgraph::Graph;
 //! 
@@ -37,14 +37,7 @@ pub extern crate nalgebra;
 
 pub mod adj_matrix;
 pub mod spec;
-
-mod shortest_distances;
-pub use shortest_distances::shortest_distances;
-
-mod floyd_warshall;
-pub use floyd_warshall::{ floyd_warshall, NegativeCycle, distance_map };
-
+pub mod shortest_path;
 pub mod metrics;
-
 pub mod traits;
 pub mod tournament;

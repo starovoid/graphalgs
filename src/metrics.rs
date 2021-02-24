@@ -3,7 +3,7 @@ use petgraph::visit::{
     IntoNeighbors, IntoNodeIdentifiers, NodeCount, 
 };
 use petgraph::algo::{ FloatMeasure, bellman_ford };
-use crate::{ shortest_distances, floyd_warshall };
+use crate::shortest_path::{ shortest_distances, floyd_warshall };
 
 /// Vertex eccentricity.
 /// 
