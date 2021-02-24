@@ -41,3 +41,4 @@ pub mod shortest_path;
 pub mod metrics;
 pub mod traits;
 pub mod tournament;
+pub mod generate;
