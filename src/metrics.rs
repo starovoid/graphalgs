@@ -1,3 +1,5 @@
+//! Basic graph characteristics based on the concept of distance between vertices.
+
 use petgraph::visit::{ 
     Visitable, NodeIndexable, IntoEdges, IntoEdgeReferences, 
     IntoNeighbors, IntoNodeIdentifiers, NodeCount, 

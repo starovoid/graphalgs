@@ -1,3 +1,5 @@
+//! Graph adjacency matrices based on the [nalgebra](https://docs.rs/nalgebra/0.24.1/nalgebra/) crate.
+
 use nalgebra::base::DMatrix;
 use nalgebra::base::Scalar;
 

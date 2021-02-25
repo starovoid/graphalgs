@@ -1,3 +1,5 @@
+//! Special algorithms that are difficult to categorize.
+
 /// Check whether the sequence of numbers is graph-like.
 /// 
 /// A sequence of non-negative integers is called a graph-like 
