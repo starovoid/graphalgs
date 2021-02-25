@@ -161,6 +161,10 @@ pub fn distance_map<G, K>(graph: G, dist_matrix: &Vec<Vec<K>>) -> HashMap<(G::No
 mod tests {
     use super::*;
     use petgraph::graph::{ Graph, NodeIndex };
+    use crate::generate::random_weighted_digraph;
+    use crate::shortest_path::bellman_ford;
+    use petgraph::Directed;
+    use rand::Rng;
 
     fn graph1() -> Graph<(), f32> {
         let mut graph = Graph::<(), f32>::new();
@@ -258,6 +262,37 @@ mod tests {
         // Edge cases
         assert_eq!(floyd_warshall(&graph4(), |edge| *edge.weight()), Ok(vec![vec![0.0]]));
         assert_eq!(floyd_warshall(&graph5(), |edge| *edge.weight()), Ok(vec![]));
+        
+        // Random tests
+
+        let mut rng = rand::thread_rng();
+
+        for n in 2..=50 {
+            let graph = Graph::<(), f64, Directed, usize>::from_edges(
+                random_weighted_digraph(n, rng.gen_range(1..n*(n-1)), -10f64, 1000f64)
+                .unwrap().into_iter().map(|(edge, w)| (edge.0, edge.1, w.round()))
+            );
+
+            let fw_res = floyd_warshall(&graph, |edge| *edge.weight());
+
+            if fw_res.is_ok() {
+                let dist_matrix = fw_res.unwrap();
+
+                for v in 0..graph.node_count() {
+                    let bf_res = bellman_ford(&graph, v.into());
+                    assert!(bf_res.is_ok());
+
+                    let dist = bf_res.unwrap().0;
+                    assert_eq!(dist_matrix[v], dist);
+                }
+
+            } 
+            else {
+                for v in 0..graph.node_count() {
+                    assert!(bellman_ford(&graph, v.into()).is_err());
+                }
+            }
+        }
     }
     
     #[test]
