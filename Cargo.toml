@@ -1,6 +1,6 @@
 [package]
 name = "graphalgs"
-version = "0.0.3"
+version = "0.0.4"
 authors = ["PrototypeRailGun <52821033+PrototypeRailGun@users.noreply.github.com>"]
 edition = "2018"
 license = "MIT"
@@ -10,7 +10,6 @@ homepage="https://github.com/PrototypeRailGun/graphalgs"
 repository="https://github.com/PrototypeRailGun/graphalgs"
 
 [lib]
-
 name = "graphalgs"
 bench = false
 
