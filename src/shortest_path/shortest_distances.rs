@@ -53,6 +53,10 @@ where
 mod tests {
     use super::*;
     use petgraph::graph::Graph;
+    use crate::shortest_path::bellman_ford;
+    use crate::generate::random_digraph;
+    use petgraph::Directed;
+    use rand::Rng;
 
     #[test]
     fn test_shortest_distances() {
@@ -171,5 +175,22 @@ mod tests {
             shortest_distances(&graph, graph.from_index(6)), 
             vec![1.0, 1.0, 2.0, 3.0, 2.0, 1.0, 0.0]
         );
+
+        // Random tests
+
+        let mut rng = rand::thread_rng();
+
+        for n in 2..=50 {
+            let graph = Graph::<(), f32, Directed, usize>::from_edges(
+                random_digraph(n, rng.gen_range(1..n*(n-1))).unwrap()
+                .into_iter().map(|edge| (edge.0, edge.1, 1.0))
+            );
+            
+            for v in 0..graph.node_count() {
+                let sd_res = shortest_distances(&graph, v.into());
+                let bf_res = bellman_ford(&graph, v.into()).unwrap().0;
+                assert_eq!(sd_res, bf_res);
+            }
+        }
     }
 }
