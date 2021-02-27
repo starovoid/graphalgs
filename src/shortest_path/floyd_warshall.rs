@@ -9,7 +9,7 @@ pub use petgraph::algo::FloatMeasure;
 // In the current version of petgraph, the NegativeCycle structure contains a private field, 
 // which prevents its public use. With the correction of this error, this definition will be removed.
 #[derive(Clone, Debug, PartialEq)]
-pub struct NegativeCycle(pub ());
+pub struct NegativeCycle{}
 
 
 /// [Floyd–Warshall algorithm](https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm) for all pairs shortest path problem.
@@ -75,7 +75,7 @@ pub fn floyd_warshall<G, F, K>(graph: G, mut edge_cost: F) -> Result<Vec<Vec<K>>
         let source = graph.to_index(edge.source());
         let target = graph.to_index(edge.target());
         let cost = edge_cost(edge);
-
+        
         if cost < dist[source][target] {
             dist[source][target] = cost;
         }
@@ -95,7 +95,7 @@ pub fn floyd_warshall<G, F, K>(graph: G, mut edge_cost: F) -> Result<Vec<Vec<K>>
     // it means that there is a negative cycle in the graph.
     for i in 0..num_of_nodes {
         if dist[i][i] < K::zero() {
-            return Err(NegativeCycle(()));
+            return Err(NegativeCycle{});
         }
     }
 
@@ -252,12 +252,12 @@ mod tests {
         );
         
         // Graphs with negative cycle
-        assert_eq!(floyd_warshall(&graph3(), |edge| *edge.weight()), Err(NegativeCycle(())));
-        assert_eq!(floyd_warshall(&graph6(), |edge| *edge.weight()), Err(NegativeCycle(())));
+        assert_eq!(floyd_warshall(&graph3(), |edge| *edge.weight()), Err(NegativeCycle{}));
+        assert_eq!(floyd_warshall(&graph6(), |edge| *edge.weight()), Err(NegativeCycle{}));
         
         let mut graph = graph1();
         graph.add_edge(3.into(), 3.into(), -5.0);
-        assert_eq!(floyd_warshall(&graph, |edge| *edge.weight()), Err(NegativeCycle(())));
+        assert_eq!(floyd_warshall(&graph, |edge| *edge.weight()), Err(NegativeCycle{}));
         
         // Edge cases
         assert_eq!(floyd_warshall(&graph4(), |edge| *edge.weight()), Ok(vec![vec![0.0]]));

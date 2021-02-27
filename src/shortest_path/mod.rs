@@ -8,4 +8,7 @@ pub use shortest_distances::shortest_distances;
 mod floyd_warshall;
 pub use floyd_warshall::{ floyd_warshall, distance_map, NegativeCycle };
 
+mod spfa;
+pub use spfa::spfa;
+
 pub use petgraph::algo::{ dijkstra, bellman_ford, astar };
