@@ -4,8 +4,8 @@ use petgraph::algo::FloatMeasure;
 use crate::shortest_path::floyd_warshall::NegativeCycle;
 
 
-/// [Shortest Path Faster Algorithm](https://en.wikipedia.org/wiki/Shortest_Path_Faster_Algorithm)
-///  Compute shortest paths from node `source` to all other.
+/// [Shortest Path Faster Algorithm](https://en.wikipedia.org/wiki/Shortest_Path_Faster_Algorithm).
+/// Compute shortest distances from node `source` to all other.
 ///
 /// Compute shortest paths lengths in a weighted graph with positive or negative edge weights, 
 /// but with no negative cycles.
