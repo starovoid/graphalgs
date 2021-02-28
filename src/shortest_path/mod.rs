@@ -11,4 +11,7 @@ pub use floyd_warshall::{ floyd_warshall, distance_map, NegativeCycle };
 mod spfa;
 pub use spfa::spfa;
 
+mod johnson;
+pub use johnson::johnson;
+
 pub use petgraph::algo::{ dijkstra, bellman_ford, astar };
