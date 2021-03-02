@@ -20,7 +20,7 @@ Graph algorithms based on the Rust "petgraph" library.
 2. The following algorithms for solving the shortest path problems have been implemented:
     * SPFA
     * Johnson's algorithm
-    * Seidel'a algorithm
+    * Seidel's algorithm
 3. Nalgebra updated to version "0.25.1".
 
 ## Usage
