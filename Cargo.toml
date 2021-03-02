@@ -17,6 +17,7 @@ bench = false
 petgraph = "0.5.1"
 nalgebra = "0.24.1"
 rand = "0.8.3"
+num-traits = "0.2.14"
 
 [dev-dependencies]
 criterion = "0.3"

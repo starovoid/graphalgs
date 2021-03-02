@@ -150,9 +150,9 @@ mod test {
 
         let mut graph = MatrixGraph::new();
         let a = graph.add_node('a'); let b = graph.add_node('b'); let c = graph.add_node('c');
-        graph.add_edge(a, b, 1f64); graph.add_edge(a, c, 2f64); graph.add_edge(c, b, 3f64);
-        let am = unweighted(&graph, 1f64, 0f64);
-        assert_eq!(am, Matrix3::new(0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0));
+        graph.add_edge(a, b, 1i64); graph.add_edge(a, c, 2i64); graph.add_edge(c, b, 3i64);
+        let am = unweighted(&graph, true, false);
+        assert_eq!(am, Matrix3::new(false, true, true, false, false, false, false, true, false));
 
         let mut graph = MatrixGraph::new_undirected();
         let a = graph.add_node('a'); let b = graph.add_node('b'); let c = graph.add_node('c');
