@@ -1,4 +1,4 @@
-//! Graph adjacency matrices based on the [nalgebra](https://docs.rs/nalgebra/0.24.1/nalgebra/) crate.
+//! Graph adjacency matrices based on the [nalgebra](https://docs.rs/nalgebra/0.25.1/nalgebra/) crate.
 
 use nalgebra::base::DMatrix;
 use nalgebra::base::Scalar;
@@ -13,7 +13,7 @@ use petgraph::visit::{ IntoEdges, IntoNodeIdentifiers, GraphProp, EdgeRef,
 /// adjacency matrix will contain the value ```is_edge```, otherwise - ```no_edge```.
 /// 
 /// This matrix is designed for calculations using **nalgebra** so it can only contain types
-/// with the ```Scalar``` trait. <a href="https://nalgebra.org/rustdoc/nalgebra/base/trait.Scalar.html">About Scalar</a>.
+/// with the ```Scalar``` trait. [About Scalar](https://docs.rs/nalgebra/0.25.1/nalgebra/base/trait.Scalar.html).
 /// 
 /// Note: the order of the matrix is equal to the maximum vertex index.
 /// 
@@ -57,7 +57,7 @@ pub fn unweighted<G, W>(graph: G, is_edge: W, no_edge: W) -> DMatrix<W>
 /// Weighted adjacency matrix of a simple graph.
 /// 
 /// This matrix is designed for calculations using **nalgebra** so it can only contain types
-/// with the ```Scalar``` trait. <a href="https://nalgebra.org/rustdoc/nalgebra/base/trait.Scalar.html">About Scalar</a>.
+/// with the ```Scalar``` trait. [About Scalar](https://docs.rs/nalgebra/0.25.1/nalgebra/base/trait.Scalar.html).
 /// 
 /// Note: the order of the matrix is equal to the maximum vertex index.
 /// 
