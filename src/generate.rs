@@ -3,7 +3,6 @@
 use std::collections::{ HashSet, HashMap };
 use rand::Rng;
 use rand::distributions::uniform::SampleUniform;
-use petgraph::algo::FloatMeasure;
 
 
 /// Graph generation error: more edges are specified 
@@ -102,7 +101,7 @@ pub fn random_digraph(
 ///     .unwrap().into_iter().map(|(edge, w)| (edge.0, edge.1, w))
 /// );
 /// ```
-pub fn random_weighted_digraph<K: FloatMeasure + SampleUniform>(
+pub fn random_weighted_digraph<K: SampleUniform + PartialOrd + Copy>(
         nodes: usize, nedges: usize, min_w: K, max_w: K) -> Result<HashMap<(usize, usize), K>, EdgeNumberError> {
 
     if nodes == 0 {
@@ -286,8 +285,8 @@ mod test {
 
     #[test]
     fn test_random_weighted_digraph() {
-        assert!(random_weighted_digraph(5, 10, -100f32, 100f32).is_ok());
-        assert!(random_weighted_digraph(0, 0, -100f64, 100f64).is_ok());
+        assert!(random_weighted_digraph(5, 10, 10u8, 100u8).is_ok());
+        assert!(random_weighted_digraph(0, 0, -100i64, 100i64).is_ok());
         assert!(random_weighted_digraph(50, 1000, 0.0, 0.001).is_ok());
         assert_eq!(
             random_weighted_digraph(5, 100, -10.0, 10.0),
