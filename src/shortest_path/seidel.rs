@@ -135,10 +135,10 @@ pub fn apd<K>(A: DMatrix<K>) -> DMatrix<K>
     }
 
     unsafe {
-        let mut Z = DMatrix::new_uninitialized(n, n);
+        let mut Z = DMatrix::new_uninitialized(n, n).assume_init();
         A.mul_to(&A, &mut Z);
 
-        let mut B = DMatrix::new_uninitialized(n, n);
+        let mut B = DMatrix::new_uninitialized(n, n).assume_init();
         for i in 0..n {
             for j in 0..n {        
                 if i != j && (A[(i, j)] == K::one() || Z[(i, j)] > K::zero()) {
@@ -150,14 +150,14 @@ pub fn apd<K>(A: DMatrix<K>) -> DMatrix<K>
         }
 
         let T = apd(B);
-        let mut X = DMatrix::new_uninitialized(n, n);
+        let mut X = DMatrix::new_uninitialized(n, n).assume_init();
         T.mul_to(&A, &mut X);
 
         let degree = A.row_iter()
             .map(|row| row.sum())
             .collect::<Vec<K>>();
         
-        let mut D = DMatrix::new_uninitialized(n, n);
+        let mut D = DMatrix::new_uninitialized(n, n).assume_init();
         for i in 0..n {
             for j in 0..n {
                 if X[(i, j)] >= T[(i, j)] * degree[j] {
