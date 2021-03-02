@@ -14,4 +14,7 @@ pub use spfa::spfa;
 mod johnson;
 pub use johnson::johnson;
 
+mod seidel;
+pub use seidel::{ seidel, apd };
+
 pub use petgraph::algo::{ dijkstra, bellman_ford, astar };

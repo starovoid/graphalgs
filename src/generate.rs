@@ -74,10 +74,10 @@ pub fn random_digraph(
 
 /// Random directed weighted graph.
 /// 
-/// Create and return a random graph with a specified number of vertices and edges 
+/// Create and return a random digraph with a specified number of vertices and edges 
 /// and random edge weights from a given range `[min_w, max_w)`.
-/// Note: weights must have the [FloatMeasure](https://docs.rs/petgraph/0.5.1/petgraph/algo/trait.FloatMeasure.html) 
-/// + [SampleUniform](https://docs.rs/rand/0.8.3/rand/distributions/uniform/trait.SampleUniform.html) trait.
+/// Note: weights must have the 
+/// [SampleUniform](https://docs.rs/rand/0.8.3/rand/distributions/uniform/trait.SampleUniform.html) trait.
 /// 
 /// ## Arguments
 /// * `nodes`: number of nodes.
@@ -88,7 +88,7 @@ pub fn random_digraph(
 /// ## Returns
 /// * `Err`: if the required number of vertices is greater than the maximum possible.
 /// * `Ok`: set `HashMap<(usize, usize), K>` of edges with `usize` vertex indices, 
-///         where `K: FloatMeasure + SampleUniform`.
+///         where `K` is the type of weights.
 /// 
 /// # Examples
 /// 
@@ -199,6 +199,7 @@ pub fn random_ungraph(
 /// 
 /// Create and return a random graph with a specified number of vertices and edges 
 /// and random edge weights from a given range `[min_w, max_w)`.
+/// Each undirected edge **{i, j}** is represented by a pair of directed edges **(i, j)** and **(j, i)**.
 /// Note: weights must have the  
 /// [SampleUniform](https://docs.rs/rand/0.8.3/rand/distributions/uniform/trait.SampleUniform.html) trait.
 /// 
@@ -211,7 +212,7 @@ pub fn random_ungraph(
 /// ## Returns
 /// * `Err`: if the required number of vertices is greater than the maximum possible.
 /// * `Ok`: set `HashMap<(usize, usize), K>` of edges with `usize` vertex indices, 
-///         where `K: FloatMeasure + SampleUniform`.
+///         where `K` is the type of weights.
 /// 
 /// # Examples
 /// 
