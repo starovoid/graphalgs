@@ -16,13 +16,12 @@ Graph algorithms based on the Rust "petgraph" library.
 
 ## What's new
 
-1. A critical change in version 0.0.4 was the regrouping of the shortest path algorithms into a separate module 'shortest_path'. 
-2. Algorithms for generating random directed graphs (simple and weighted versions) were added.
-3. Algorithms were added to simplify the work with tournaments:
-    * Is the graph a tournament?
-    * Is a tournament transitive?
-    * Generation of a random tournament with a given number of vertices.
-4. Added random tests for shortest_distances() and floyd_warshall().
+1. Algorithms for generating random undirected graphs (weighted and unweighted versions) were added.
+2. The following algorithms for solving the shortest path problems have been implemented:
+    * SPFA
+    * Johnson's algorithm
+    * Seidel'a algorithm
+3. Nalgebra updated to version "0.25.1".
 
 ## Usage
 
@@ -32,4 +31,4 @@ extern crate graphalgs;
 
 ```
 
-If you have any comments or suggestions, or you suddenly found an error, please write to prototyperailgun@gmail.com or start  a new issue or pool request.
+If you have any comments or suggestions, or you suddenly found an error, please start a new issue or pool request.

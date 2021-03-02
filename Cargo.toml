@@ -1,6 +1,6 @@
 [package]
 name = "graphalgs"
-version = "0.0.4"
+version = "0.0.5"
 authors = ["PrototypeRailGun <52821033+PrototypeRailGun@users.noreply.github.com>"]
 edition = "2018"
 license = "MIT"
