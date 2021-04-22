@@ -19,7 +19,19 @@ impl<'a, N: 'a, E: 'a, Ty: EdgeType, Ix: IndexType> EdgeCount for &'a Graph<N, E
     }
 }
 
+impl<N, E, Ty: EdgeType, Ix: IndexType> EdgeCount for Graph<N, E, Ty, Ix> {
+    fn number_of_edges(self) -> usize {
+        self.edge_count()
+    }
+}
+
 impl<'a, N: 'a, E: 'a, Ty: EdgeType, Ix: IndexType> EdgeCount for &'a StableGraph<N, E, Ty, Ix> {
+    fn number_of_edges(self) -> usize {
+        self.edge_count()
+    }
+}
+
+impl<N, E, Ty: EdgeType, Ix: IndexType> EdgeCount for StableGraph<N, E, Ty, Ix> {
     fn number_of_edges(self) -> usize {
         self.edge_count()
     }
@@ -31,13 +43,31 @@ impl<'a, N: 'a + NodeTrait, E: 'a, Ty: EdgeType> EdgeCount for &'a GraphMap<N, E
     }
 }
 
+impl<N: NodeTrait, E, Ty: EdgeType> EdgeCount for GraphMap<N, E, Ty> {
+    fn number_of_edges(self) -> usize {
+        self.edge_count()
+    }
+}
+
 impl<'a, N: 'a, E: 'a, Ty: EdgeType> EdgeCount for &'a MatrixGraph<N, E, Ty> {
     fn number_of_edges(self) -> usize {
         self.edge_count()
     }
 }
 
+impl<N, E, Ty: EdgeType> EdgeCount for MatrixGraph<N, E, Ty> {
+    fn number_of_edges(self) -> usize {
+        self.edge_count()
+    }
+}
+
 impl<'a, N: 'a, E: 'a, Ty: EdgeType> EdgeCount for &'a Csr<N, E, Ty> {
+    fn number_of_edges(self) -> usize {
+        self.edge_count()
+    }
+}
+
+impl<N, E, Ty: EdgeType> EdgeCount for Csr<N, E, Ty> {
     fn number_of_edges(self) -> usize {
         self.edge_count()
     }
