@@ -1,4 +1,6 @@
 //! Special algorithms that are difficult to categorize.
+use std::collections::BinaryHeap;
+
 
 /// Check whether the sequence of numbers is graph-like.
 /// 
@@ -16,24 +18,43 @@
 /// // A single vertex of a graph cannot have degree 2.
 /// assert!(!is_degree_sequence_graphlike(vec![2]));
 /// ```
-pub fn is_degree_sequence_graphlike(mut degrees: Vec<usize>) -> bool{
-    // At each step of the algorithm, we remove the vertex with the maximum degree s,
-    // and then try to reduce the s of the following degrees by 1. 
+pub fn is_degree_sequence_graphlike(degrees: Vec<usize>) -> bool {
+    // At each step of the algorithm, we remove the vertex with the maximum degree d,
+    // and then try to reduce the d of the following degrees by 1. 
     // If at some point this becomes impossible, then this sequence is not a graph sequence.
-    let mut length = degrees.len();
+    
+    // The sum of the degrees of the vertices must be even.
+    if degrees.iter().sum::<usize>() % 2 == 1 {
+        return false;
+    }
+    
+    // Isolated vertexes are not of interest.
+    let mut degrees = degrees.into_iter()
+        .filter(|d| *d > 0usize)
+        .collect::<BinaryHeap<usize>>();
 
     while degrees.len() > 0 {
-        degrees.sort();
         let d = degrees.pop().unwrap();
-        length -= 1;
-
-        for i in 1..=d {
-            if i > length || degrees[length-i] == 0 {
+        if d > degrees.len() {
+            return false;
+        }
+        
+        let mut temp = Vec::<usize>::new();
+        for _ in 0..d {
+            let x = degrees.pop().unwrap();
+            if x == 0 {
                 return false;
             }
-            degrees[length-i] -= 1;
+            temp.push(x-1);
+        }
+
+        for x in temp.into_iter() {
+            if x != 0 {
+                degrees.push(x);
+            }
         }
     }
+
     true
 }
 
