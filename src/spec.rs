@@ -18,7 +18,7 @@ use std::collections::BinaryHeap;
 /// // A single vertex of a graph cannot have degree 2.
 /// assert!(!is_degree_sequence_graphlike(vec![2]));
 /// ```
-pub fn is_degree_sequence_graphlike(degrees: Vec<usize>) -> bool {
+pub fn is_degree_sequence_graphlike(degrees: &Vec<usize>) -> bool {
     // At each step of the algorithm, we remove the vertex with the maximum degree d,
     // and then try to reduce the d of the following degrees by 1. 
     // If at some point this becomes impossible, then this sequence is not a graph sequence.
@@ -30,6 +30,7 @@ pub fn is_degree_sequence_graphlike(degrees: Vec<usize>) -> bool {
     
     // Isolated vertexes are not of interest.
     let mut degrees = degrees.into_iter()
+        .map(|d| *d)
         .filter(|d| *d > 0usize)
         .collect::<BinaryHeap<usize>>();
 
@@ -65,21 +66,21 @@ mod tests {
 
     #[test]
     fn test_is_the_degree_sequence_graphlike() {
-        assert!(is_degree_sequence_graphlike(vec![]));
-        assert!(is_degree_sequence_graphlike(vec![0]));
-        assert!(!is_degree_sequence_graphlike(vec![1]));
-        assert!(!is_degree_sequence_graphlike(vec![2]));
-        assert!(!is_degree_sequence_graphlike(vec![5]));
-        assert!(is_degree_sequence_graphlike(vec![1, 1]));
-        assert!(!is_degree_sequence_graphlike(vec![1, 2]));
-        assert!(is_degree_sequence_graphlike(vec![0, 0, 0]));
-        assert!(!is_degree_sequence_graphlike(vec![1, 1, 1]));
-        assert!(!is_degree_sequence_graphlike(vec![1, 2, 0]));
-        assert!(is_degree_sequence_graphlike(vec![1, 2, 1]));
-        assert!(is_degree_sequence_graphlike(vec![5, 5, 4, 3, 2, 2, 2, 1]));
-        assert!(is_degree_sequence_graphlike(vec![5, 3, 5, 5, 2, 2, 1, 1]));
-        assert!(!is_degree_sequence_graphlike(vec![5, 5, 5, 4, 2, 1, 1, 1]));
-        assert!(is_degree_sequence_graphlike(vec![1, 1, 1, 4, 2, 3, 1, 3, 1, 1]));
-        assert!(!is_degree_sequence_graphlike(vec![1, 1, 10, 4, 2, 3, 1, 3, 1, 1]));
+        assert!(is_degree_sequence_graphlike(&vec![]));
+        assert!(is_degree_sequence_graphlike(&vec![0]));
+        assert!(!is_degree_sequence_graphlike(&vec![1]));
+        assert!(!is_degree_sequence_graphlike(&vec![2]));
+        assert!(!is_degree_sequence_graphlike(&vec![5]));
+        assert!(is_degree_sequence_graphlike(&vec![1, 1]));
+        assert!(!is_degree_sequence_graphlike(&vec![1, 2]));
+        assert!(is_degree_sequence_graphlike(&vec![0, 0, 0]));
+        assert!(!is_degree_sequence_graphlike(&vec![1, 1, 1]));
+        assert!(!is_degree_sequence_graphlike(&vec![1, 2, 0]));
+        assert!(is_degree_sequence_graphlike(&vec![1, 2, 1]));
+        assert!(is_degree_sequence_graphlike(&vec![5, 5, 4, 3, 2, 2, 2, 1]));
+        assert!(is_degree_sequence_graphlike(&vec![5, 3, 5, 5, 2, 2, 1, 1]));
+        assert!(!is_degree_sequence_graphlike(&vec![5, 5, 5, 4, 2, 1, 1, 1]));
+        assert!(is_degree_sequence_graphlike(&vec![1, 1, 1, 4, 2, 3, 1, 3, 1, 1]));
+        assert!(!is_degree_sequence_graphlike(&vec![1, 1, 10, 4, 2, 3, 1, 3, 1, 1]));
     }
 }
