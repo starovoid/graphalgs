@@ -531,8 +531,8 @@ mod tests {
         graph.add_edge(n5, n2, ()); graph.add_edge(n5, n6, ());
         graph.add_edge(n5, n1, ()); graph.add_edge(n5, n4, ());
         graph.add_edge(n6, n0, ()); graph.add_edge(n6, n1, ());
-        graph.add_edge(n6, n5, ()); graph.add_edge(n2, n5, ()); 
-
+        graph.add_edge(n6, n5, ()); graph.add_edge(n2, n5, ());
+        
         graph
     }
 

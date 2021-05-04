@@ -13,10 +13,10 @@ use std::collections::BinaryHeap;
 /// use graphalgs::spec::is_degree_sequence_graphlike;
 /// 
 /// // Graph: [ 1-2-2-1 ] (the numbers are degrees of the vertices).
-/// assert!(is_degree_sequence_graphlike(vec![2, 2, 1, 1]));
+/// assert!(is_degree_sequence_graphlike(&vec![2, 2, 1, 1]));
 /// 
 /// // A single vertex of a graph cannot have degree 2.
-/// assert!(!is_degree_sequence_graphlike(vec![2]));
+/// assert!(!is_degree_sequence_graphlike(&vec![2]));
 /// ```
 pub fn is_degree_sequence_graphlike(degrees: &Vec<usize>) -> bool {
     // At each step of the algorithm, we remove the vertex with the maximum degree d,
