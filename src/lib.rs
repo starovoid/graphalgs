@@ -43,3 +43,4 @@ pub mod metrics;
 pub mod traits;
 pub mod tournament;
 pub mod generate;
+pub mod connect;
