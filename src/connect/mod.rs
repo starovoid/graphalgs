@@ -9,3 +9,6 @@ pub mod scc {
         condensation, kosaraju_scc,  tarjan_scc,
     };
 }
+
+mod find_bridges;
+pub use find_bridges::find_bridges;
