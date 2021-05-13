@@ -12,3 +12,6 @@ pub mod scc {
 
 mod find_bridges;
 pub use find_bridges::find_bridges;
+
+mod articulation_points;
+pub use articulation_points::articulation_points;
