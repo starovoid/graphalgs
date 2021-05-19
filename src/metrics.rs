@@ -1,8 +1,10 @@
 //! Basic graph characteristics based on the concept of distance between vertices.
 
+use std::collections::{ HashSet, VecDeque };
+
 use petgraph::visit::{ 
     Visitable, NodeIndexable, IntoEdges, IntoEdgeReferences, 
-    IntoNeighbors, IntoNodeIdentifiers, NodeCount, 
+    IntoNeighbors, IntoNodeIdentifiers, NodeCount, GraphProp
 };
 use petgraph::algo::{ FloatMeasure, bellman_ford };
 use crate::shortest_path::{ shortest_distances, floyd_warshall };
@@ -486,10 +488,137 @@ where
 }
 
 
+/// Girth of a simple graph.
+/// 
+/// Calculate the girth of a simple graph (directed or undirected).
+/// 
+/// # Examples
+/// 
+/// ```
+/// use graphalgs::metrics::girth;
+/// use petgraph::graph::{ Graph, UnGraph };
+/// 
+/// // Create the following graph:
+/// // 1 --- 2
+/// // |     |
+/// // 0     3
+/// 
+/// let mut g = UnGraph::new_undirected();
+/// let n0 = g.add_node(());
+/// let n1 = g.add_node(());
+/// let n2 = g.add_node(());
+/// let n3 = g.add_node(());
+/// g.add_edge(n0, n1, ());
+/// g.add_edge(n1, n2, ());
+/// g.add_edge(n2, n3, ());
+/// 
+/// // The graph is acyclic and its girth is infinite.
+/// assert_eq!(girth(&g), f32::INFINITY);
+/// 
+/// // Add an edge {3, 0} and create a cycle in the graph.
+/// g.add_edge(n3, n0, ());
+/// assert_eq!(girth(&g), 4.0);
+/// ```
+pub fn girth<G>(graph: G) -> f32
+where 
+    G: Visitable + NodeIndexable + IntoEdges + IntoNodeIdentifiers + GraphProp
+{
+    let mut best = f32::INFINITY;
+
+    if graph.is_directed() {
+        let mut stack = Vec::<usize>::new();
+        let mut used = vec![false; graph.node_bound()];
+
+        for start in 0..graph.node_bound() {
+            if used[start] {
+                continue;
+            }
+
+            stack.push(start);
+            let mut depth = vec![0usize; graph.node_bound()];
+            let mut predecessors = (0..graph.node_bound())
+                .map(|_| HashSet::<usize>::new())
+                .collect::<Vec<HashSet<usize>>>();
+            
+            while stack.len() > 0 {
+                let current = stack.pop().unwrap();
+
+                if !used[current] {
+                    used[current] = true;
+                    let d = depth[current];
+
+                    for nb in graph.neighbors(graph.from_index(current)) {
+                        let v = graph.to_index(nb);
+                        if used[v] {
+                            if predecessors[current].contains(&v) {
+                                best = best.min((depth[current] - depth[v] + 1) as f32);
+                            }
+                        } 
+                        else {
+                            depth[v] = d + 1;
+                            stack.push(v);
+                            predecessors[v] = predecessors[v].union(&predecessors[current]).cloned().collect();
+                            predecessors[v].insert(current);
+                        }
+                    }
+                }
+                if best == 2.0 {
+                    return 2.0
+                }
+            }
+        }
+    } 
+
+    else {
+
+        for start in 0..graph.node_bound() {
+            let mut queue = VecDeque::<usize>::new();
+            queue.push_back(start);
+
+            let mut used = vec![false; graph.node_bound()];
+            let mut depth = vec![0usize; graph.node_bound()];
+            let mut inp = vec![None; graph.node_bound()];
+
+            while queue.len() > 0 {
+                let current = queue.pop_front().unwrap();
+                let d = depth[current] + 1;
+
+                for nb in graph.neighbors(graph.from_index(current)) {
+                    let v = graph.to_index(nb);
+                    if used[v] {
+                        if inp[current] == Some(v) {
+                            continue;
+                        }
+                        if depth[v] == d - 1 {
+                            best = best.min((d*2 - 1) as f32);
+                        } 
+                        else if depth[v] == d {
+                            best = best.min((d*2) as f32);
+                        }
+                    } 
+                    else {
+                        used[v] = true;
+                        queue.push_back(v);
+                        depth[v] = d;
+                        inp[v] = Some(current);
+                    }
+                }
+            }
+
+            if best == 3.0 {
+                return 3.0;
+            }
+        }
+    }
+
+    best
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use petgraph::graph::Graph;
+    use petgraph::graph::{ Graph, UnGraph };
 
 
     fn graph1() -> Graph<(), ()> {
@@ -566,6 +695,27 @@ mod tests {
         let mut graph = Graph::new();
         graph.add_node(()); graph.add_node(());
 
+        graph
+    }
+
+    fn graph7() -> UnGraph<(), ()> {
+        let mut graph = UnGraph::<(), ()>::new_undirected();
+        let n0 = graph.add_node(()); let n1 = graph.add_node(());
+        let n2 = graph.add_node(()); let n3 = graph.add_node(());
+        let n4 = graph.add_node(()); let n5 = graph.add_node(());
+        let n6 = graph.add_node(());
+
+        graph.add_edge(n0, n6, ()); 
+        graph.add_edge(n0, n1, ());
+        graph.add_edge(n1, n2, ());
+        graph.add_edge(n1, n5, ());
+        graph.add_edge(n2, n3, ());
+        graph.add_edge(n3, n4, ());
+        graph.add_edge(n4, n5, ());
+        graph.add_edge(n5, n2, ()); 
+        graph.add_edge(n6, n1, ());
+        graph.add_edge(n6, n5, ());
+        
         graph
     }
 
@@ -702,5 +852,44 @@ mod tests {
         assert_eq!(weighted_periphery(&graph4(), |edge| *edge.weight()), vec![]);
         assert_eq!(weighted_periphery(&graph5(), |edge| *edge.weight()), vec![5.into()]);
         assert_eq!(weighted_periphery(&graph6(), |edge| *edge.weight()), vec![0.into(), 1.into()]);
+    }
+
+    #[test]
+    fn test_girth() {
+        assert_eq!(girth(&Graph::<(), ()>::new()), f32::INFINITY);
+        assert_eq!(girth(&UnGraph::<(), ()>::new_undirected()), f32::INFINITY);
+        assert_eq!(girth(&graph1()), 2.0);
+        assert_eq!(girth(&graph5()), 2.0);
+        assert_eq!(girth(&graph7()), 3.0);
+
+        let mut g = Graph::<i32, ()>::new();
+        let n0 = g.add_node(0);
+        assert_eq!(girth(&g), f32::INFINITY);
+        let n1 = g.add_node(1);
+        assert_eq!(girth(&g), f32::INFINITY);
+        g.add_edge(n0, n1, ());
+        assert_eq!(girth(&g), f32::INFINITY);
+        g.add_edge(n0, n1, ());
+        assert_eq!(girth(&g), f32::INFINITY);
+        g.add_edge(n1, n0, ());
+        assert_eq!(girth(&g), 2.0);
+
+        let mut g = UnGraph::<i32, ()>::new_undirected();
+        let n0 = g.add_node(0);
+        assert_eq!(girth(&g), f32::INFINITY);
+        let n1 = g.add_node(1);
+        assert_eq!(girth(&g), f32::INFINITY);
+        g.add_edge(n0, n1, ());
+        assert_eq!(girth(&g), f32::INFINITY);
+        let n2 = g.add_node(2);
+        g.add_edge(n0, n2, ());
+        assert_eq!(girth(&g), f32::INFINITY);
+        g.add_edge(n2, n1, ());
+        assert_eq!(girth(&g), 3.0);
+
+        let mut g = Graph::<i32, ()>::new();
+        let n0 = g.add_node(0);
+        g.add_edge(n0, n0, ());
+        assert_eq!(girth(&g), f32::INFINITY);
     }
 }
