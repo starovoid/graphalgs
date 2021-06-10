@@ -16,12 +16,10 @@ Graph algorithms based on the Rust "petgraph" library.
 
 ## What's new
 
-1. Algorithms for generating random undirected graphs (weighted and unweighted versions) were added.
-2. The following algorithms for solving the shortest path problems have been implemented:
-    * SPFA
-    * Johnson's algorithm
-    * Seidel's algorithm
-3. Nalgebra updated to version "0.25.1".
+1. Added a function that calculates the complement of the input graph.
+2. Added algorithms for finding bridges and articulation points of a simple undirected graph.
+3. The connectivity algorithms are grouped into separate module.
+4. Added the "girth" metric for a simple unweighted graph.
 
 ## Usage
 
