@@ -5,3 +5,5 @@
 pub use petgraph::algo::min_spanning_tree as kruskal;
 mod prim;
 pub use prim::prim;
+mod boruvka;
+pub use boruvka::boruvka;
