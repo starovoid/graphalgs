@@ -1,11 +1,10 @@
 //! Graph generators.
 
-use std::collections::{ HashSet, HashMap };
-use rand::Rng;
 use rand::distributions::uniform::SampleUniform;
+use rand::Rng;
+use std::collections::{HashMap, HashSet};
 
-
-/// Graph generation error: more edges are specified 
+/// Graph generation error: more edges are specified
 /// than is possible for a given number of vertices.
 #[derive(Clone, Debug, PartialEq)]
 pub struct EdgeNumberError {
@@ -14,11 +13,10 @@ pub struct EdgeNumberError {
     pub max_edges: usize,
 }
 
-
 /// Random directed graph.
-/// 
+///
 /// Create and return a random directed graph with a given number of nodes and edges.
-/// 
+///
 /// ## Arguments
 /// * `nodes`: number of nodes.
 /// * `nedges`: number of edges.
@@ -26,34 +24,33 @@ pub struct EdgeNumberError {
 /// ## Returns
 /// * `Err`: if the required number of vertices is greater than the maximum possible.
 /// * `Ok`: set `HashSet<(usize, usize)>` of edges with `usize` vertex indices.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use graphalgs::generate::random_digraph;
 /// use petgraph::{ Graph, Directed };
-/// 
+///
 /// let graph: Graph::<(), (), Directed, usize> = Graph::from_edges(
 ///     random_digraph(4, 11).unwrap()
 /// );
 /// ```
 pub fn random_digraph(
-        nodes: usize, nedges: usize) -> Result<HashSet<(usize, usize)>, EdgeNumberError> {
-
+    nodes: usize,
+    nedges: usize,
+) -> Result<HashSet<(usize, usize)>, EdgeNumberError> {
     if nodes == 0 {
-        return Ok(HashSet::new())
+        return Ok(HashSet::new());
     }
-    
-    if nedges > nodes*(nodes-1) {
-        return Err(
-            EdgeNumberError { 
-                nodes: nodes, 
-                nedges: nedges, 
-                max_edges: nodes*(nodes-1)
-            }
-        )
+
+    if nedges > nodes * (nodes - 1) {
+        return Err(EdgeNumberError {
+            nodes: nodes,
+            nedges: nedges,
+            max_edges: nodes * (nodes - 1),
+        });
     }
-    
+
     let mut rng = rand::thread_rng();
     let mut edges = HashSet::with_capacity(nedges);
     let mut count = 0;
@@ -71,14 +68,13 @@ pub fn random_digraph(
     Ok(edges)
 }
 
-
 /// Random directed weighted graph.
-/// 
-/// Create and return a random digraph with a specified number of vertices and edges 
+///
+/// Create and return a random digraph with a specified number of vertices and edges
 /// and random edge weights from a given range `[min_w, max_w)`.
-/// Note: weights must have the 
+/// Note: weights must have the
 /// [SampleUniform](https://docs.rs/rand/0.8.3/rand/distributions/uniform/trait.SampleUniform.html) trait.
-/// 
+///
 /// ## Arguments
 /// * `nodes`: number of nodes.
 /// * `nedges`: number of edges.
@@ -87,35 +83,36 @@ pub fn random_digraph(
 ///
 /// ## Returns
 /// * `Err`: if the required number of vertices is greater than the maximum possible.
-/// * `Ok`: set `HashMap<(usize, usize), K>` of edges with `usize` vertex indices, 
+/// * `Ok`: set `HashMap<(usize, usize), K>` of edges with `usize` vertex indices,
 ///         where `K` is the type of weights.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use graphalgs::generate::random_weighted_digraph;
 /// use petgraph::{ Graph, Directed };
-/// 
+///
 /// let graph: Graph::<(), f64, Directed, usize> = Graph::from_edges(
 ///     random_weighted_digraph(5, 16, -10.0, 10.0)
 ///     .unwrap().into_iter().map(|(edge, w)| (edge.0, edge.1, w))
 /// );
 /// ```
 pub fn random_weighted_digraph<K: SampleUniform + PartialOrd + Copy>(
-        nodes: usize, nedges: usize, min_w: K, max_w: K) -> Result<HashMap<(usize, usize), K>, EdgeNumberError> {
-
+    nodes: usize,
+    nedges: usize,
+    min_w: K,
+    max_w: K,
+) -> Result<HashMap<(usize, usize), K>, EdgeNumberError> {
     if nodes == 0 {
-        return Ok(HashMap::new())
+        return Ok(HashMap::new());
     }
 
-    if nedges > nodes*(nodes-1) {
-        return Err(
-            EdgeNumberError { 
-                nodes: nodes, 
-                nedges: nedges, 
-                max_edges: nodes*(nodes-1)
-            }
-        )
+    if nedges > nodes * (nodes - 1) {
+        return Err(EdgeNumberError {
+            nodes: nodes,
+            nedges: nedges,
+            max_edges: nodes * (nodes - 1),
+        });
     }
 
     let mut rng = rand::thread_rng();
@@ -135,12 +132,11 @@ pub fn random_weighted_digraph<K: SampleUniform + PartialOrd + Copy>(
     Ok(edges)
 }
 
-
 /// Random undirected graph.
-/// 
+///
 /// Create and return a random undirected graph with a given number of nodes and edges.
 /// Each undirected edge **{i, j}** is represented by a pair of directed edges **(i, j)** and **(j, i)**.
-/// 
+///
 /// ## Arguments
 /// * `nodes`: number of nodes.
 /// * `nedges`: number of edges.
@@ -148,32 +144,31 @@ pub fn random_weighted_digraph<K: SampleUniform + PartialOrd + Copy>(
 /// ## Returns
 /// * `Err`: if the required number of vertices is greater than the maximum possible.
 /// * `Ok`: set `HashSet<(usize, usize)>` of edges with `usize` vertex indices.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use graphalgs::generate::random_ungraph;
 /// use petgraph::{ Graph, Directed };
-/// 
+///
 /// let graph: Graph::<(), (), Directed, usize> = Graph::from_edges(
 ///     random_ungraph(4, 5).unwrap()
 /// );
 /// ```
 pub fn random_ungraph(
-    nodes: usize, nedges: usize) -> Result<HashSet<(usize, usize)>, EdgeNumberError> {
-
+    nodes: usize,
+    nedges: usize,
+) -> Result<HashSet<(usize, usize)>, EdgeNumberError> {
     if nodes == 0 {
-        return Ok(HashSet::new())
+        return Ok(HashSet::new());
     }
 
-    if nedges > nodes*(nodes-1)/2 {
-        return Err(
-            EdgeNumberError { 
-                nodes: nodes, 
-                nedges: nedges, 
-                max_edges: nodes*(nodes-1)/2
-            }
-        )
+    if nedges > nodes * (nodes - 1) / 2 {
+        return Err(EdgeNumberError {
+            nodes: nodes,
+            nedges: nedges,
+            max_edges: nodes * (nodes - 1) / 2,
+        });
     }
 
     let mut rng = rand::thread_rng();
@@ -194,15 +189,14 @@ pub fn random_ungraph(
     Ok(edges)
 }
 
-
 /// Random undirected weighted graph.
-/// 
-/// Create and return a random graph with a specified number of vertices and edges 
+///
+/// Create and return a random graph with a specified number of vertices and edges
 /// and random edge weights from a given range `[min_w, max_w)`.
 /// Each undirected edge **{i, j}** is represented by a pair of directed edges **(i, j)** and **(j, i)**.
 /// Note: weights must have the  
 /// [SampleUniform](https://docs.rs/rand/0.8.3/rand/distributions/uniform/trait.SampleUniform.html) trait.
-/// 
+///
 /// ## Arguments
 /// * `nodes`: number of nodes.
 /// * `nedges`: number of edges.
@@ -211,35 +205,36 @@ pub fn random_ungraph(
 ///
 /// ## Returns
 /// * `Err`: if the required number of vertices is greater than the maximum possible.
-/// * `Ok`: set `HashMap<(usize, usize), K>` of edges with `usize` vertex indices, 
+/// * `Ok`: set `HashMap<(usize, usize), K>` of edges with `usize` vertex indices,
 ///         where `K` is the type of weights.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use graphalgs::generate::random_weighted_ungraph;
 /// use petgraph::{ Graph, Directed };
-/// 
+///
 /// let graph: Graph::<(), f64, Directed, usize> = Graph::from_edges(
 ///     random_weighted_ungraph(5, 9, -10.0, 10.0)
 ///     .unwrap().into_iter().map(|(edge, w)| (edge.0, edge.1, w))
 /// );
 /// ```
 pub fn random_weighted_ungraph<K: SampleUniform + PartialOrd + Copy>(
-    nodes: usize, nedges: usize, min_w: K, max_w: K) -> Result<HashMap<(usize, usize), K>, EdgeNumberError> {
-
+    nodes: usize,
+    nedges: usize,
+    min_w: K,
+    max_w: K,
+) -> Result<HashMap<(usize, usize), K>, EdgeNumberError> {
     if nodes == 0 {
-        return Ok(HashMap::new())
+        return Ok(HashMap::new());
     }
 
-    if nedges > nodes*(nodes-1)/2 {
-        return Err(
-            EdgeNumberError { 
-                nodes: nodes, 
-                nedges: nedges, 
-                max_edges: nodes*(nodes-1)/2
-            }
-        )
+    if nedges > nodes * (nodes - 1) / 2 {
+        return Err(EdgeNumberError {
+            nodes: nodes,
+            nedges: nedges,
+            max_edges: nodes * (nodes - 1) / 2,
+        });
     }
 
     let mut rng = rand::thread_rng();
@@ -260,13 +255,12 @@ pub fn random_weighted_ungraph<K: SampleUniform + PartialOrd + Copy>(
     Ok(edges)
 }
 
-
 #[cfg(test)]
 mod test {
     use super::*;
-    use petgraph::Graph;
     use petgraph::Directed;
-    
+    use petgraph::Graph;
+
     #[test]
     fn test_random_digraph() {
         assert!(random_digraph(5, 10).is_ok());
@@ -275,13 +269,15 @@ mod test {
         assert_eq!(
             random_digraph(5, 100),
             Err(EdgeNumberError {
-                    nodes: 5,
-                    nedges: 100,
-                    max_edges: 20,
-                }
-            )
+                nodes: 5,
+                nedges: 100,
+                max_edges: 20,
+            })
         );
-        println!("{:?}", &Graph::<(), (), Directed, usize>::from_edges(random_digraph(4, 11).unwrap()));
+        println!(
+            "{:?}",
+            &Graph::<(), (), Directed, usize>::from_edges(random_digraph(4, 11).unwrap())
+        );
     }
 
     #[test]
@@ -292,15 +288,20 @@ mod test {
         assert_eq!(
             random_weighted_digraph(5, 100, -10.0, 10.0),
             Err(EdgeNumberError {
-                    nodes: 5,
-                    nedges: 100,
-                    max_edges: 20,
-                }
+                nodes: 5,
+                nedges: 100,
+                max_edges: 20,
+            })
+        );
+        println!(
+            "{:?}",
+            &Graph::<(), f32, Directed, usize>::from_edges(
+                random_weighted_digraph(4, 11, -10.0, 10.0)
+                    .unwrap()
+                    .into_iter()
+                    .map(|(edge, w)| (edge.0, edge.1, w))
             )
         );
-        println!("{:?}", &Graph::<(), f32, Directed, usize>::from_edges(
-            random_weighted_digraph(4, 11, -10.0, 10.0).unwrap().into_iter().map(|(edge, w)| (edge.0, edge.1, w))
-        ));
     }
 
     #[test]
@@ -311,13 +312,15 @@ mod test {
         assert_eq!(
             random_ungraph(5, 100),
             Err(EdgeNumberError {
-                    nodes: 5,
-                    nedges: 100,
-                    max_edges: 10,
-                }
-            )
+                nodes: 5,
+                nedges: 100,
+                max_edges: 10,
+            })
         );
-        println!("{:?}", &Graph::<(), (), Directed, usize>::from_edges(random_ungraph(4, 5).unwrap()));
+        println!(
+            "{:?}",
+            &Graph::<(), (), Directed, usize>::from_edges(random_ungraph(4, 5).unwrap())
+        );
     }
 
     #[test]
@@ -328,14 +331,19 @@ mod test {
         assert_eq!(
             random_weighted_ungraph(5, 100, -10.0, 10.0),
             Err(EdgeNumberError {
-                    nodes: 5,
-                    nedges: 100,
-                    max_edges: 10,
-                }
+                nodes: 5,
+                nedges: 100,
+                max_edges: 10,
+            })
+        );
+        println!(
+            "{:?}",
+            &Graph::<(), f32, Directed, usize>::from_edges(
+                random_weighted_ungraph(4, 5, -10.0, 10.0)
+                    .unwrap()
+                    .into_iter()
+                    .map(|(edge, w)| (edge.0, edge.1, w))
             )
         );
-        println!("{:?}", &Graph::<(), f32, Directed, usize>::from_edges(
-            random_weighted_ungraph(4, 5, -10.0, 10.0).unwrap().into_iter().map(|(edge, w)| (edge.0, edge.1, w))
-        ));
     }
 }

@@ -1,23 +1,24 @@
-use std::collections::HashSet;
-use petgraph::visit::{ IntoEdgeReferences, NodeIndexable, IntoNodeIdentifiers, EdgeRef, NodeCount, IntoEdges };
 pub use petgraph::algo::FloatMeasure;
 use petgraph::unionfind::UnionFind;
-
+use petgraph::visit::{
+    EdgeRef, IntoEdgeReferences, IntoEdges, IntoNodeIdentifiers, NodeCount, NodeIndexable,
+};
+use std::collections::HashSet;
 
 /// [Borůvka's algorithm](https://en.wikipedia.org/wiki/Bor%C5%AFvka%27s_algorithm)
 /// for computing a minimum spanning tree of a graph.
-/// 
+///
 /// The input graph is treated as if undirected.
-/// Uses the Boruvka's algorithm with the UnionFind structure. 
-/// The function actually returns a minimum spanning forest, 
+/// Uses the Boruvka's algorithm with the UnionFind structure.
+/// The function actually returns a minimum spanning forest,
 /// i.e. a minimum spanning tree for each connected component of the graph.
-/// 
+///
 /// ## Arguments
 /// * `graph`: weighted undirected graph.
 /// * `edge_cost`: closure that returns cost of a particular edge.
-/// 
+///
 /// ## Returns
-/// * `HashSet<(usize, usize)>`: the set of edges of the resulting MST, 
+/// * `HashSet<(usize, usize)>`: the set of edges of the resulting MST,
 ///     where each edge is denoted by a pair of vertex indices, index order is random.
 ///
 /// # Examples
@@ -25,17 +26,17 @@ use petgraph::unionfind::UnionFind;
 /// use std::collections::HashSet;
 /// use graphalgs::mst::boruvka;
 /// use petgraph::graph::UnGraph;
-/// 
+///
 /// let mut graph: UnGraph<(), f64> = UnGraph::new_undirected();
 /// let n0 = graph.add_node(()); let n1 = graph.add_node(());
 /// let n2 = graph.add_node(()); let n3 = graph.add_node(());
 /// let n4 = graph.add_node(()); let n5 = graph.add_node(());
-/// 
+///
 /// graph.add_edge(n0, n1, 10.0); graph.add_edge(n1, n3, 4.0);
 /// graph.add_edge(n2, n3, -5.0); graph.add_edge(n2, n0, -2.0);
 /// graph.add_edge(n2, n5, 6.0); graph.add_edge(n5, n4, 2.0);
 /// graph.add_edge(n3, n4, 10.0);
-/// 
+///
 /// assert_eq!(
 ///     boruvka(&graph, |edge| *edge.weight()),
 ///     vec![(5, 4), (1, 3), (2, 0), (2, 3), (2, 5)].into_iter()
@@ -73,7 +74,7 @@ where
                 }
             }
         }
-        
+
         let mut union_occurred = false;
         for k in 0..graph.node_count() {
             if let Some((s, t)) = min_edge[components.find(k)] {
@@ -92,42 +93,56 @@ where
     msf
 }
 
-
 #[cfg(test)]
 mod tests {
-    use super::*;    
-    use std::collections::HashSet;
-    use petgraph::graph::{ Graph, UnGraph };
-    use crate::mst::prim;
+    use super::*;
     use crate::generate::random_weighted_ungraph;
+    use crate::mst::prim;
+    use petgraph::graph::{Graph, UnGraph};
+    use std::collections::HashSet;
 
     fn graph1() -> Graph<(), f32> {
         let mut graph = Graph::<(), f32>::new();
-        let n0 = graph.add_node(()); let n1 = graph.add_node(());
-        let n2 = graph.add_node(()); let n3 = graph.add_node(());
-        let n4 = graph.add_node(()); 
+        let n0 = graph.add_node(());
+        let n1 = graph.add_node(());
+        let n2 = graph.add_node(());
+        let n3 = graph.add_node(());
+        let n4 = graph.add_node(());
 
-        graph.add_edge(n0, n1, 40.0); graph.add_edge(n0, n4, 18.0);
-        graph.add_edge(n1, n0, 40.0); graph.add_edge(n1, n4, 15.0);
-        graph.add_edge(n1, n2, 22.0); graph.add_edge(n1, n3, 6.0);
-        graph.add_edge(n2, n1, 22.0); graph.add_edge(n2, n3, 14.0); 
-        graph.add_edge(n3, n4, 20.0); graph.add_edge(n3, n1, 6.0);
-        graph.add_edge(n3, n2, 14.0); graph.add_edge(n4, n0, 18.0);
-        graph.add_edge(n4, n1, 15.0); graph.add_edge(n4, n3, 20.0);
+        graph.add_edge(n0, n1, 40.0);
+        graph.add_edge(n0, n4, 18.0);
+        graph.add_edge(n1, n0, 40.0);
+        graph.add_edge(n1, n4, 15.0);
+        graph.add_edge(n1, n2, 22.0);
+        graph.add_edge(n1, n3, 6.0);
+        graph.add_edge(n2, n1, 22.0);
+        graph.add_edge(n2, n3, 14.0);
+        graph.add_edge(n3, n4, 20.0);
+        graph.add_edge(n3, n1, 6.0);
+        graph.add_edge(n3, n2, 14.0);
+        graph.add_edge(n4, n0, 18.0);
+        graph.add_edge(n4, n1, 15.0);
+        graph.add_edge(n4, n3, 20.0);
 
         graph
     }
 
     fn graph2() -> UnGraph<i8, f64> {
         let mut graph = UnGraph::<i8, f64>::new_undirected();
-        let n0 = graph.add_node(0); let n1 = graph.add_node(1);
-        let n2 = graph.add_node(2); let n3 = graph.add_node(3);
-        let n4 = graph.add_node(4); let n5 = graph.add_node(5);
+        let n0 = graph.add_node(0);
+        let n1 = graph.add_node(1);
+        let n2 = graph.add_node(2);
+        let n3 = graph.add_node(3);
+        let n4 = graph.add_node(4);
+        let n5 = graph.add_node(5);
         let n6 = graph.add_node(6);
 
-        graph.add_edge(n0, n2, 5.0); graph.add_edge(n1, n0, 1.0);
-        graph.add_edge(n1, n2, 2.0); graph.add_edge(n3, n4, 2.0);
-        graph.add_edge(n5, n4, 3.0); graph.add_edge(n4, n6, 6.0);
+        graph.add_edge(n0, n2, 5.0);
+        graph.add_edge(n1, n0, 1.0);
+        graph.add_edge(n1, n2, 2.0);
+        graph.add_edge(n3, n4, 2.0);
+        graph.add_edge(n5, n4, 3.0);
+        graph.add_edge(n4, n6, 6.0);
         graph.add_edge(n6, n5, 3.0);
 
         graph
@@ -136,25 +151,41 @@ mod tests {
     #[test]
     fn test_prim() {
         assert_eq!(
-            boruvka(&graph1(), |edge| *edge.weight()), 
-            vec![(0, 4), (1, 4), (1, 3), (2, 3)].into_iter().collect::<HashSet<(usize, usize)>>());
+            boruvka(&graph1(), |edge| *edge.weight()),
+            vec![(0, 4), (1, 4), (1, 3), (2, 3)]
+                .into_iter()
+                .collect::<HashSet<(usize, usize)>>()
+        );
         assert_eq!(
-            boruvka(&graph2(), |edge| *edge.weight()), 
-            vec![(1, 0), (1, 2), (3, 4), (5, 4), (6, 5)].into_iter().collect::<HashSet<(usize, usize)>>());
+            boruvka(&graph2(), |edge| *edge.weight()),
+            vec![(1, 0), (1, 2), (3, 4), (5, 4), (6, 5)]
+                .into_iter()
+                .collect::<HashSet<(usize, usize)>>()
+        );
         assert_eq!(
-            boruvka(&graph1(), |edge| - *edge.weight()), 
-            vec![(0, 1), (1, 2), (0, 4), (3, 4)].into_iter().collect::<HashSet<(usize, usize)>>());
+            boruvka(&graph1(), |edge| -*edge.weight()),
+            vec![(0, 1), (1, 2), (0, 4), (3, 4)]
+                .into_iter()
+                .collect::<HashSet<(usize, usize)>>()
+        );
         assert_eq!(
-            boruvka(&graph2(), |edge| - *edge.weight()), 
-            vec![(0, 2), (1, 2), (3, 4), (4, 6), (5, 4)].into_iter().collect::<HashSet<(usize, usize)>>());
+            boruvka(&graph2(), |edge| -*edge.weight()),
+            vec![(0, 2), (1, 2), (3, 4), (4, 6), (5, 4)]
+                .into_iter()
+                .collect::<HashSet<(usize, usize)>>()
+        );
 
         for _ in 0..20 {
-            let graph: UnGraph::<(), f64, usize> = UnGraph::from_edges(
+            let graph: UnGraph<(), f64, usize> = UnGraph::from_edges(
                 random_weighted_ungraph(50, 1000, -100.0, 100.0)
-                .unwrap().into_iter().map(|(edge, w)| (edge.0, edge.1, w))
+                    .unwrap()
+                    .into_iter()
+                    .map(|(edge, w)| (edge.0, edge.1, w)),
             );
             let mut boruvka_output = boruvka(&graph, |edge| *edge.weight());
-            let mut prim_output =  prim(&graph, |edge| *edge.weight()).into_iter().collect::<HashSet<(usize, usize)>>();
+            let mut prim_output = prim(&graph, |edge| *edge.weight())
+                .into_iter()
+                .collect::<HashSet<(usize, usize)>>();
 
             let mut temp = HashSet::<(usize, usize)>::new();
             for edge in boruvka_output.iter() {
@@ -172,19 +203,20 @@ mod tests {
                 prim_output.insert(edge);
             }
 
-            assert_eq!(
-                boruvka_output,
-                prim_output
-            );
+            assert_eq!(boruvka_output, prim_output);
         }
 
         for _ in 0..20 {
-            let graph: UnGraph::<(), f64, usize> = UnGraph::from_edges(
+            let graph: UnGraph<(), f64, usize> = UnGraph::from_edges(
                 random_weighted_ungraph(500, 250, -100.0, 100.0)
-                .unwrap().into_iter().map(|(edge, w)| (edge.0, edge.1, w))
+                    .unwrap()
+                    .into_iter()
+                    .map(|(edge, w)| (edge.0, edge.1, w)),
             );
             let mut boruvka_output = boruvka(&graph, |edge| *edge.weight());
-            let mut prim_output =  prim(&graph, |edge| *edge.weight()).into_iter().collect::<HashSet<(usize, usize)>>();
+            let mut prim_output = prim(&graph, |edge| *edge.weight())
+                .into_iter()
+                .collect::<HashSet<(usize, usize)>>();
 
             let mut temp = HashSet::<(usize, usize)>::new();
             for edge in boruvka_output.iter() {
@@ -193,7 +225,7 @@ mod tests {
             for edge in temp.into_iter() {
                 boruvka_output.insert(edge);
             }
-            
+
             let mut temp = HashSet::<(usize, usize)>::new();
             for edge in prim_output.iter() {
                 temp.insert((edge.1, edge.0));
@@ -202,19 +234,20 @@ mod tests {
                 prim_output.insert(edge);
             }
 
-            assert_eq!(
-                boruvka_output,
-                prim_output
-            );
+            assert_eq!(boruvka_output, prim_output);
         }
 
         for _ in 0..100 {
-            let graph: UnGraph::<(), f64, usize> = UnGraph::from_edges(
+            let graph: UnGraph<(), f64, usize> = UnGraph::from_edges(
                 random_weighted_ungraph(10, 30, -100.0, 100.0)
-                .unwrap().into_iter().map(|(edge, w)| (edge.0, edge.1, w))
+                    .unwrap()
+                    .into_iter()
+                    .map(|(edge, w)| (edge.0, edge.1, w)),
             );
             let mut boruvka_output = boruvka(&graph, |edge| *edge.weight());
-            let mut prim_output =  prim(&graph, |edge| *edge.weight()).into_iter().collect::<HashSet<(usize, usize)>>();
+            let mut prim_output = prim(&graph, |edge| *edge.weight())
+                .into_iter()
+                .collect::<HashSet<(usize, usize)>>();
 
             let mut temp = HashSet::<(usize, usize)>::new();
             for edge in boruvka_output.iter() {
@@ -223,7 +256,7 @@ mod tests {
             for edge in temp.into_iter() {
                 boruvka_output.insert(edge);
             }
-            
+
             let mut temp = HashSet::<(usize, usize)>::new();
             for edge in prim_output.iter() {
                 temp.insert((edge.1, edge.0));
@@ -232,10 +265,7 @@ mod tests {
                 prim_output.insert(edge);
             }
 
-            assert_eq!(
-                boruvka_output,
-                prim_output
-            );
+            assert_eq!(boruvka_output, prim_output);
         }
-    } 
+    }
 }

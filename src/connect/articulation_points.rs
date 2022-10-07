@@ -1,26 +1,23 @@
-use petgraph::visit::{
-    IntoNodeIdentifiers, IntoNeighbors, NodeIndexable
-};
-
+use petgraph::visit::{IntoNeighbors, IntoNodeIdentifiers, NodeIndexable};
 
 /// Find all articulation points in a simple undirected graph.
-/// 
-/// In a graph, a vertex is called an articulation point if removing it and all the edges 
+///
+/// In a graph, a vertex is called an articulation point if removing it and all the edges
 /// associated with it results in the increase of the number of connected components in the graph.
-/// 
+///
 /// Returns the vector of `G::NodeID`.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use graphalgs::connect::articulation_points;
 /// use petgraph::graph::UnGraph;
-/// 
+///
 /// // Create the following graph:
 /// // 0----1    4
 /// //      | __/|
 /// // 5----2/---3
-/// 
+///
 /// let mut g = UnGraph::new_undirected();
 /// let n0 = g.add_node(());
 /// let n1 = g.add_node(());
@@ -34,13 +31,13 @@ use petgraph::visit::{
 /// g.add_edge(n3, n4, ());
 /// g.add_edge(n2, n4, ());
 /// g.add_edge(n5, n2, ());
-/// 
+///
 /// // The articulation points of this graph are vertices 1 and 2.
 /// assert_eq!(articulation_points(&g), vec![n2, n1]);
 /// ```
-pub fn articulation_points<G>(graph: G) -> Vec<G::NodeId> 
-where 
-    G: IntoNodeIdentifiers + IntoNeighbors + NodeIndexable
+pub fn articulation_points<G>(graph: G) -> Vec<G::NodeId>
+where
+    G: IntoNodeIdentifiers + IntoNeighbors + NodeIndexable,
 {
     let mut cut_points = Vec::new();
     let mut visited = vec![false; graph.node_bound()];
@@ -48,12 +45,19 @@ where
     let mut tin = vec![0usize; graph.node_bound()];
     let mut fup = vec![0usize; graph.node_bound()];
     let mut timer = 0usize;
-    
+
     for start in 0..graph.node_bound() {
         if !visited[start] {
             dfs_helper(
-                graph, start, graph.node_bound() + 1, &mut is_cut_point,
-                &mut cut_points, &mut visited, &mut timer, &mut tin, &mut fup
+                graph,
+                start,
+                graph.node_bound() + 1,
+                &mut is_cut_point,
+                &mut cut_points,
+                &mut visited,
+                &mut timer,
+                &mut tin,
+                &mut fup,
             );
         }
     }
@@ -61,16 +65,18 @@ where
     cut_points
 }
 
-
 fn dfs_helper<G>(
-        graph: G, v: usize, p: usize,
-        is_cut_point: &mut Vec<bool>,
-        cut_points: &mut Vec<G::NodeId>,
-        visited: &mut Vec<bool>, timer: &mut usize,
-        tin: &mut Vec<usize>, fup: &mut Vec<usize>
-)
-where 
-    G: IntoNodeIdentifiers + IntoNeighbors + NodeIndexable
+    graph: G,
+    v: usize,
+    p: usize,
+    is_cut_point: &mut Vec<bool>,
+    cut_points: &mut Vec<G::NodeId>,
+    visited: &mut Vec<bool>,
+    timer: &mut usize,
+    tin: &mut Vec<usize>,
+    fup: &mut Vec<usize>,
+) where
+    G: IntoNodeIdentifiers + IntoNeighbors + NodeIndexable,
 {
     visited[v] = true;
     *timer += 1;
@@ -85,9 +91,18 @@ where
         }
         if visited[to] {
             fup[v] = fup[v].min(tin[to]);
-        }
-        else {
-            dfs_helper(graph, to, v, is_cut_point, cut_points, visited, timer, tin, fup);
+        } else {
+            dfs_helper(
+                graph,
+                to,
+                v,
+                is_cut_point,
+                cut_points,
+                visited,
+                timer,
+                tin,
+                fup,
+            );
             fup[v] = fup[v].min(fup[to]);
             if fup[to] >= tin[v] && p < graph.node_bound() && !is_cut_point[v] {
                 is_cut_point[v] = true;
@@ -102,7 +117,6 @@ where
         cut_points.push(graph.from_index(v));
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -162,7 +176,7 @@ mod tests {
 
         g.add_edge(n5, n4, ());
         assert_eq!(articulation_points(&g), vec![n3, n2]);
-        
+
         let n8 = g.add_node(());
         g.add_edge(n3, n8, ());
         g.add_edge(n5, n8, ());

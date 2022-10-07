@@ -1,47 +1,46 @@
-//! Algorithms that simplify work with such type of graphs as a 
+//! Algorithms that simplify work with such type of graphs as a
 //! [tournament](https://en.wikipedia.org/wiki/Tournament_(graph_theory)).
 
-use std::hash::Hash;
-use std::collections::HashSet;
 use rand::Rng;
+use std::collections::HashSet;
+use std::hash::Hash;
 
-use petgraph::visit::{EdgeRef, IntoEdgeReferences, NodeCount, IntoNodeIdentifiers };
 use crate::traits::EdgeCount;
-
+use petgraph::visit::{EdgeRef, IntoEdgeReferences, IntoNodeIdentifiers, NodeCount};
 
 /// Is the graph a [tournament](https://en.wikipedia.org/wiki/Tournament_(graph_theory))?
-/// 
+///
 /// This function checks if the given graph is a tournament and returns the corresponding boolean value.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use graphalgs::tournament::is_tournament;
 /// use petgraph::Graph;
-/// 
+///
 /// let graph = Graph::<(), ()>::from_edges(&[
-///     (0, 2), (1, 0), (1, 2), 
+///     (0, 2), (1, 0), (1, 2),
 ///     (3, 0), (3, 1), (3, 2),
 /// ]);
-/// 
+///
 /// assert!(is_tournament(&graph));
-/// 
+///
 /// let graph = Graph::<(), ()>::from_edges(&[
-///     (0, 2), (1, 0), (1, 2), 
+///     (0, 2), (1, 0), (1, 2),
 ///     (3, 0), (3, 1), (1, 3),
 /// ]);
-/// 
+///
 /// // The graph is not a tournament, because it contains a pair of opposite edges.
 /// assert!(!is_tournament(&graph));
 /// ```
 pub fn is_tournament<G>(graph: G) -> bool
-where 
+where
     G: IntoEdgeReferences + NodeCount + EdgeCount,
     G::NodeId: Eq + Hash,
 {
     // Tournament has |V|*(|V|-1)/2 edges.
-    if 2*graph.number_of_edges() != graph.node_count() * (graph.node_count()-1) {
-        return false;   
+    if 2 * graph.number_of_edges() != graph.node_count() * (graph.node_count() - 1) {
+        return false;
     }
 
     let mut edges: HashSet<(G::NodeId, G::NodeId)> = HashSet::new();
@@ -50,9 +49,10 @@ where
         let source = edge.source();
         let target = edge.target();
 
-        if source == target || 
-            edges.contains(&(target, source)) ||
-            edges.contains(&(source, target))  {
+        if source == target
+            || edges.contains(&(target, source))
+            || edges.contains(&(source, target))
+        {
             return false;
         }
 
@@ -62,17 +62,16 @@ where
     true
 }
 
-
 /// Random tournament on n vertices.
-/// 
+///
 /// Returns a vector of edges `Vec<(usize, usize)>`.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use graphalgs::tournament::{ random_tournament, is_tournament };
 /// use petgraph::{ Graph, Directed };
-/// 
+///
 /// let graph: Graph::<(), (), Directed, usize> = Graph::from_edges(random_tournament(4));
 /// assert!(is_tournament(&graph));
 /// ```
@@ -82,10 +81,10 @@ pub fn random_tournament(n: usize) -> Vec<(usize, usize)> {
     }
 
     let mut rng = rand::thread_rng();
-    let mut edges = Vec::with_capacity(n*(n-1)/2);
+    let mut edges = Vec::with_capacity(n * (n - 1) / 2);
 
-    for i in 0..n-1 {
-        for j in i+1..n {
+    for i in 0..n - 1 {
+        for j in i + 1..n {
             if rng.gen::<bool>() {
                 edges.push((i, j));
             } else {
@@ -97,43 +96,51 @@ pub fn random_tournament(n: usize) -> Vec<(usize, usize)> {
     edges
 }
 
-
 /// Is the tournament transitive?
-/// 
+///
 /// Check if the tournament is transitive and return the corresponding boolean value.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use graphalgs::tournament::is_tournament_transitive;
 /// use petgraph::Graph;
-/// 
+///
 /// let graph = Graph::<(), ()>::from_edges(&[
-///     (0, 1), (0, 2), (0, 3), 
+///     (0, 1), (0, 2), (0, 3),
 ///     (1, 2), (1, 3), (2, 3),
 /// ]);
 /// assert!(is_tournament_transitive(&graph));
-/// 
+///
 /// let graph = Graph::<(), ()>::from_edges(&[
-///     (0, 2), (1, 0), (1, 2), 
+///     (0, 2), (1, 0), (1, 2),
 ///     (3, 0), (3, 1), (2, 3),
 /// ]);
 /// assert!(!is_tournament_transitive(&graph));
 /// ```
 pub fn is_tournament_transitive<G>(graph: G) -> bool
-where 
+where
     G: IntoEdgeReferences + NodeCount + EdgeCount + IntoNodeIdentifiers,
     G::NodeId: Eq + Hash,
 {
-    let mut edges: HashSet<(G::NodeId, G::NodeId)> = HashSet::with_capacity(graph.number_of_edges());
-    edges.extend(graph.edge_references().map(|edge|(edge.source(), edge.target())));
+    let mut edges: HashSet<(G::NodeId, G::NodeId)> =
+        HashSet::with_capacity(graph.number_of_edges());
+    edges.extend(
+        graph
+            .edge_references()
+            .map(|edge| (edge.source(), edge.target())),
+    );
 
     for x in graph.node_identifiers() {
         for y in graph.node_identifiers() {
             if x != y {
                 for z in graph.node_identifiers() {
-                    if z != y && z != x && edges.contains(&(x, y)) &&
-                            edges.contains(&(y, z)) && edges.contains(&(z, x)) {
+                    if z != y
+                        && z != x
+                        && edges.contains(&(x, y))
+                        && edges.contains(&(y, z))
+                        && edges.contains(&(z, x))
+                    {
                         return false;
                     }
                 }
@@ -144,17 +151,16 @@ where
     true
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use petgraph::Directed;
-    use petgraph::Graph;
-    use petgraph::stable_graph::StableGraph;
+    use petgraph::csr::Csr;
     use petgraph::graphmap::GraphMap;
     use petgraph::matrix_graph::MatrixGraph;
-    use petgraph::csr::Csr;
     use petgraph::matrix_graph::UnMatrix;
+    use petgraph::stable_graph::StableGraph;
+    use petgraph::Directed;
+    use petgraph::Graph;
 
     fn graph1() -> Graph<(), ()> {
         let mut graph = Graph::new();
@@ -178,17 +184,11 @@ mod tests {
     }
 
     fn graph3() -> Graph<(), ()> {
-        Graph::<(), ()>::from_edges(&[
-            (0, 2), (1, 0), (1, 2), 
-            (3, 0), (3, 1), (1, 2),
-        ])
+        Graph::<(), ()>::from_edges(&[(0, 2), (1, 0), (1, 2), (3, 0), (3, 1), (1, 2)])
     }
 
     fn graph4() -> Graph<(), ()> {
-        Graph::<(), ()>::from_edges(&[
-            (0, 2), (1, 0), (1, 2), 
-            (3, 0), (3, 1), (1, 1),
-        ])
+        Graph::<(), ()>::from_edges(&[(0, 2), (1, 0), (1, 2), (3, 0), (3, 1), (1, 1)])
     }
 
     fn graph_tour() -> Graph<(), i32> {
@@ -249,7 +249,7 @@ mod tests {
         graph.add_edge(n2, n3, 5);
         graph
     }
-    
+
     #[test]
     fn test_is_tournament() {
         // At the same time testing EdgeCount trait.
@@ -269,10 +269,12 @@ mod tests {
         assert_eq!(random_tournament(0), vec![]);
         assert_eq!(random_tournament(1), vec![]);
         for i in 2..100 {
-            assert!(is_tournament(&Graph::<(), (), Directed, usize>::from_edges(random_tournament(i))));
+            assert!(is_tournament(
+                &Graph::<(), (), Directed, usize>::from_edges(random_tournament(i))
+            ));
         }
     }
-    
+
     #[test]
     fn test_is_tournament_transitive() {
         assert!(!is_tournament_transitive(&graph_tour()));
@@ -280,7 +282,9 @@ mod tests {
         assert!(is_tournament_transitive(&graphmap_tour()));
         assert!(is_tournament_transitive(&matrix_graph_tour()));
         assert!(is_tournament_transitive(&csr_tour()));
-        assert!(is_tournament_transitive(&Graph::<(), (), Directed, usize>::from_edges(random_tournament(2))));
+        assert!(is_tournament_transitive(
+            &Graph::<(), (), Directed, usize>::from_edges(random_tournament(2))
+        ));
 
         let mut graph = Graph::<(), ()>::new();
         assert!(is_tournament_transitive(&graph));
