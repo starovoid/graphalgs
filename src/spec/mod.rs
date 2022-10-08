@@ -1,4 +1,6 @@
 //! Special algorithms that are difficult to categorize.
+mod prufer;
+
 use std::collections::BinaryHeap;
 
 /// Check whether the sequence of numbers is graph-like.
