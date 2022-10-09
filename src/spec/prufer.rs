@@ -86,6 +86,67 @@ where
     }
 }
 
+/// Restore a tree by its [prufer code](https://en.wikipedia.org/wiki/Pr%C3%BCfer_sequence).
+///
+/// The function returns a set of edges in any order,
+/// the order of the vertex numbers in the edge does not matter.
+/// If an impossible code is passed to the function, an empty vector is returned.
+///
+/// # Example
+///
+/// ```
+/// use graphalgs::spec::prufer_decode;
+///
+/// // tree:
+/// //
+/// //     4
+/// //     |
+/// // 5-0-3-1
+/// //     |
+/// //     2
+///
+/// assert_eq!(
+///     prufer_decode(&vec![3, 3, 3, 0]),
+///     vec![(1, 3), (2, 3), (4, 3), (3, 0), (0, 5)]
+/// );
+///
+/// assert_eq!(prufer_decode(&vec![0, 100]), vec![]); // Invalid code
+/// ```
+pub fn prufer_decode(code: &Vec<usize>) -> Vec<(usize, usize)> {
+    let n = code.len() + 2;
+
+    let mut degree: Vec<usize> = vec![1; n];
+    for &node in code.iter() {
+        if node > degree.len() {
+            return vec![];
+        }
+        degree[node] += 1;
+    }
+
+    let mut ptr = 0;
+    while degree[ptr] != 1 {
+        ptr += 1;
+    }
+    let mut leaf = ptr;
+
+    let mut edges: Vec<(usize, usize)> = Vec::with_capacity(n - 1);
+    for &node in code.iter() {
+        edges.push((leaf, node));
+        degree[node] -= 1;
+        if degree[node] == 1 && node < ptr {
+            leaf = node;
+        } else {
+            ptr += 1;
+            while degree[ptr] != 1 {
+                ptr += 1;
+            }
+            leaf = ptr;
+        }
+    }
+    edges.push((leaf, n - 1));
+    edges
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -150,5 +211,37 @@ mod test {
         let graph = graph4();
         let ix = |i| graph.from_index(i);
         assert_eq!(prufer_code(&graph), vec![ix(2), ix(2), ix(2), ix(2)]);
+    }
+
+    #[test]
+    fn test_prufer_decode() {
+        assert_eq!(
+            prufer_decode(&vec![1, 1, 0, 0, 6, 0, 9, 9]),
+            vec![
+                (2, 1),
+                (3, 1),
+                (1, 0),
+                (4, 0),
+                (5, 6),
+                (6, 0),
+                (0, 9),
+                (7, 9),
+                (8, 9)
+            ],
+        );
+        assert_eq!(
+            prufer_decode(&vec![0, 1, 0, 1]),
+            vec![(2, 0), (3, 1), (4, 0), (0, 1), (1, 5)]
+        );
+        assert_eq!(
+            prufer_decode(&vec![3, 3, 3, 0]),
+            vec![(1, 3), (2, 3), (4, 3), (3, 0), (0, 5)]
+        );
+        assert_eq!(
+            prufer_decode(&vec![2, 2, 2, 2]),
+            vec![(0, 2), (1, 2), (3, 2), (4, 2), (2, 5)]
+        );
+
+        assert_eq!(prufer_decode(&vec![0, 1, 100, 200]), vec![]);
     }
 }

@@ -1,6 +1,6 @@
 //! Special algorithms that are difficult to categorize.
 mod prufer;
-pub use prufer::prufer_code;
+pub use prufer::{prufer_code, prufer_decode};
 
 use std::collections::BinaryHeap;
 
