@@ -1,8 +1,8 @@
 [package]
 name = "graphalgs"
-version = "0.0.6"
+version = "0.1.0"
 authors = ["PrototypeRailGun <52821033+PrototypeRailGun@users.noreply.github.com>"]
-edition = "2018"
+edition = "2021"
 license = "MIT"
 description="Graph algorithms based on the Rust 'petgraph' library."
 readme = "README.md"

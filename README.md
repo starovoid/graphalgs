@@ -68,6 +68,8 @@ Algorithms that simplify work with such type of graphs as a
 
 ## Special algorithms that are difficult to categorize
 1. [Check whether the sequence of numbers is graph-like](https://docs.rs/graphalgs/latest/graphalgs/spec/fn.is_degree_sequence_graphlike.html)
+2. [Prufer encode](https://docs.rs/graphalgs/latest/graphalgs/spec/fn.prufer_code.html)
+3. [Prufer decode](https://docs.rs/graphalgs/latest/graphalgs/spec/fn.prufer_decode.html)
 
 # Usage
 
