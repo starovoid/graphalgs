@@ -2,6 +2,9 @@
 mod prufer;
 pub use prufer::{prufer_code, prufer_decode};
 
+mod laplacian;
+pub use laplacian::laplacian_matrix;
+
 use std::collections::BinaryHeap;
 
 /// Check whether the sequence of numbers is graph-like.
