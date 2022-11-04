@@ -38,7 +38,7 @@ pub extern crate petgraph;
 
 pub mod adj_matrix;
 pub mod connect;
-pub mod elementary;
+pub mod elementary_circuits;
 pub mod generate;
 pub mod metrics;
 pub mod mst;

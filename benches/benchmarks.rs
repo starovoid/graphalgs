@@ -3,7 +3,7 @@ use criterion::measurement::WallTime;
 use criterion::BenchmarkGroup;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use graphalgs::adj_matrix::unweighted;
-use graphalgs::elementary::elementary_circuits;
+use graphalgs::elementary_circuits::elementary_circuits;
 use graphalgs::generate::{random_digraph, random_ungraph};
 use graphalgs::shortest_path::{apd, floyd_warshall, seidel, shortest_distances};
 use petgraph::{Directed, Graph};

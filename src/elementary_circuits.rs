@@ -1,4 +1,4 @@
-//! Finding all elementary circuits.
+//! Algorithms for finding elementary circuits.
 use petgraph::graph::IndexType;
 use petgraph::graph::NodeIndex;
 use petgraph::visit::EdgeRef;
@@ -47,18 +47,18 @@ fn elementary_circuits_starting_at_s<Ix>(
     debug_assert!(path.is_empty());
 }
 
-/// Finds and returns all elementary circuits in the graph.
+/// Finds and returns all elementary circuits in the directed graph.
 /// Circuit is another word for cycle.
 /// A circuit is called elementary, if it does not contain any node twice.
 ///
-/// This function returns the same circuits as [Johnson's algorithm](https://www.cs.tufts.edu/comp/150GA/homeworks/hw1/Johnson%2075.PDF), although in a different order.
-/// If I measured correctly, mine is faster.
+/// This function returns the same circuits as [Johnson's algorithm](https://www.cs.tufts.edu/comp/150GA/homeworks/hw1/Johnson%2075.PDF),
+/// although in a different order.
 ///
 /// # Example
 /// ```
 /// use petgraph::Graph;
 /// use petgraph::Directed;
-/// use graphalgs::elementary::elementary_circuits;
+/// use graphalgs::elementary_circuits::elementary_circuits;
 /// use petgraph::graph::NodeIndex;
 ///
 /// fn n(i: usize) -> NodeIndex<usize> {
