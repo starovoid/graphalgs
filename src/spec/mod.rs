@@ -5,6 +5,9 @@ pub use prufer::{prufer_code, prufer_decode};
 mod laplacian;
 pub use laplacian::laplacian_matrix;
 
+mod st;
+pub use st::count_spanning_trees;
+
 use std::collections::BinaryHeap;
 
 /// Check whether the sequence of numbers is graph-like.
