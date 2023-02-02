@@ -46,3 +46,4 @@ pub mod shortest_path;
 pub mod spec;
 pub mod tournament;
 pub mod traits;
+pub mod treap;
