@@ -91,8 +91,8 @@ where
 
     // If the distance from the node to itself has become negative,
     // it means that there is a negative cycle in the graph.
-    for i in 0..num_of_nodes {
-        if dist[i][i] < K::zero() {
+    for (i, row) in dist.iter().enumerate() {
+        if row[i] < K::zero() {
             return Err(NegativeCycle {});
         }
     }
@@ -137,7 +137,7 @@ where
 /// // Convert the distance matrix into hashmap.
 /// assert_eq!(distance_map(&graph, &dist_matrix), true_dist_map);
 /// ```
-pub fn distance_map<G, K>(graph: G, dist_matrix: &Vec<Vec<K>>) -> HashMap<(G::NodeId, G::NodeId), K>
+pub fn distance_map<G, K>(graph: G, dist_matrix: &[Vec<K>]) -> HashMap<(G::NodeId, G::NodeId), K>
 where
     G: NodeIndexable,
     G::NodeId: Eq + Hash,

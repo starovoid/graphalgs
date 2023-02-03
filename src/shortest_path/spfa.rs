@@ -62,6 +62,7 @@ use petgraph::visit::{EdgeRef, IntoEdges, IntoNodeIdentifiers, NodeIndexable};
 ///
 /// assert!(spfa(&graph, 0.into()).is_err());
 /// ```
+#[allow(clippy::type_complexity)]
 pub fn spfa<G>(
     graph: G,
     source: G::NodeId,
@@ -282,8 +283,7 @@ mod tests {
                 let spfa_res = spfa(&graph, v.into());
                 let bf_res = bellman_ford(&graph, v.into());
 
-                if spfa_res.is_ok() {
-                    let (spfa_dist, spfa_pred) = spfa_res.unwrap();
+                if let Ok((spfa_dist, spfa_pred)) = spfa_res {
                     let bf_res = bf_res.unwrap();
                     let bf_dist = bf_res.distances;
                     let bf_pred = bf_res.predecessors;

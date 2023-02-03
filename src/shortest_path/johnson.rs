@@ -128,7 +128,7 @@ where
 /// Vector h - potential function calculated for each vertex.
 /// The weight of each edge is recalculated using the formula
 /// new_weight = weight(a, b) = h(a) - h(b).
-fn dijkstra_helper<G, F, K>(graph: G, start: G::NodeId, h: &Vec<K>, edge_cost: &mut F) -> Vec<K>
+fn dijkstra_helper<G, F, K>(graph: G, start: G::NodeId, h: &[K], edge_cost: &mut F) -> Vec<K>
 where
     G: IntoEdges + Visitable + NodeIndexable,
     G::NodeId: Eq,

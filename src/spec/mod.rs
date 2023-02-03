@@ -26,7 +26,7 @@ use std::collections::BinaryHeap;
 /// // A single vertex of a graph cannot have degree 2.
 /// assert!(!is_degree_sequence_graphlike(&vec![2]));
 /// ```
-pub fn is_degree_sequence_graphlike(degrees: &Vec<usize>) -> bool {
+pub fn is_degree_sequence_graphlike(degrees: &[usize]) -> bool {
     // At each step of the algorithm, we remove the vertex with the maximum degree d,
     // and then try to reduce the d of the following degrees by 1.
     // If at some point this becomes impossible, then this sequence is not a graph sequence.

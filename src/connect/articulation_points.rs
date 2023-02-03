@@ -65,6 +65,7 @@ where
     cut_points
 }
 
+#[allow(clippy::too_many_arguments)]
 fn dfs_helper<G>(
     graph: G,
     v: usize,
