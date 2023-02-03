@@ -38,12 +38,12 @@ pub fn is_degree_sequence_graphlike(degrees: &Vec<usize>) -> bool {
 
     // Isolated vertexes are not of interest.
     let mut degrees = degrees
-        .into_iter()
-        .map(|d| *d)
+        .iter()
+        .copied()
         .filter(|d| *d > 0usize)
         .collect::<BinaryHeap<usize>>();
 
-    while degrees.len() > 0 {
+    while !degrees.is_empty() {
         let d = degrees.pop().unwrap();
         if d > degrees.len() {
             return false;

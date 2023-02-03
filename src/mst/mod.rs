@@ -7,5 +7,3 @@ mod prim;
 pub use prim::prim;
 mod boruvka;
 pub use boruvka::boruvka;
-mod edmonds;
-pub use edmonds::chu_liu_edmonds;
