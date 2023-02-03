@@ -21,10 +21,12 @@ fn bench_seidel(c: &mut Criterion) {
             .into_iter()
             .map(|edge| (edge.0, edge.1, 1.0)),
     );
-    c.bench_function("Seidel", |b| b.iter(|| {
-        run(&graph);
-        black_box(())
-    }));
+    c.bench_function("Seidel", |b| {
+        b.iter(|| {
+            run(&graph);
+            black_box(())
+        })
+    });
 }
 
 fn elementary_circuits_helper(

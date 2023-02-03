@@ -422,10 +422,7 @@ where
         .collect::<Vec<K>>();
 
     // Graph radius.
-    let rad = *ecc
-        .iter()
-        .min_by(|x, y| x.partial_cmp(y).unwrap())
-        .unwrap();
+    let rad = *ecc.iter().min_by(|x, y| x.partial_cmp(y).unwrap()).unwrap();
 
     (0..graph.node_bound())
         .filter(|i| ecc[*i] == rad)
@@ -495,10 +492,7 @@ where
         .collect::<Vec<K>>();
 
     // Graph diameter.
-    let diam = *ecc
-        .iter()
-        .max_by(|x, y| x.partial_cmp(y).unwrap())
-        .unwrap();
+    let diam = *ecc.iter().max_by(|x, y| x.partial_cmp(y).unwrap()).unwrap();
 
     (0..graph.node_bound())
         .filter(|i| ecc[*i] == diam)

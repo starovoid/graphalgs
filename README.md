@@ -70,6 +70,11 @@ Algorithms that simplify work with such type of graphs as a
 1. [Check whether the sequence of numbers is graph-like](https://docs.rs/graphalgs/latest/graphalgs/spec/fn.is_degree_sequence_graphlike.html)
 2. [Prufer encode](https://docs.rs/graphalgs/latest/graphalgs/spec/fn.prufer_code.html)
 3. [Prufer decode](https://docs.rs/graphalgs/latest/graphalgs/spec/fn.prufer_decode.html)
+4. [Counting spanning trees](https://docs.rs/graphalgs/latest/graphalgs/spec/fn.count_spanning_trees.html)
+5. [Laplacian matrix](https://docs.rs/graphalgs/latest/graphalgs/spec/fn.laplacian_matrix.html)
+
+## Circuits
+1. [Elementary circuits](https://docs.rs/graphalgs/latest/graphalgs/elementary_circuits/fn.elementary_circuits.html)
 
 # Usage
 
