@@ -61,7 +61,7 @@ where
 {
     apd(unweighted(graph, 1u32, 0u32))
         .row_iter()
-        .map(|row| row.into_iter().map(|d| *d).collect())
+        .map(|row| row.into_iter().copied().collect())
         .collect()
 }
 
@@ -240,7 +240,7 @@ mod tests {
         assert_eq!(
             apd(unweighted(&graph1(), 1u8, 0u8))
                 .row_iter()
-                .map(|row| row.into_iter().map(|d| *d).collect::<Vec<u8>>())
+                .map(|row| row.into_iter().copied().collect::<Vec<u8>>())
                 .collect::<Vec<Vec<u8>>>(),
             vec![
                 vec![0, 1, 2, 2, 1],
@@ -254,7 +254,7 @@ mod tests {
         assert_eq!(
             apd(unweighted(&graph2(), 1usize, 0usize))
                 .row_iter()
-                .map(|row| row.into_iter().map(|d| *d).collect::<Vec<usize>>())
+                .map(|row| row.into_iter().copied().collect::<Vec<usize>>())
                 .collect::<Vec<Vec<usize>>>(),
             vec![
                 vec![0, 1, 2, 2],
@@ -268,7 +268,7 @@ mod tests {
         assert_eq!(
             apd(unweighted(&graph3(), 1f64, 0.0))
                 .row_iter()
-                .map(|row| row.into_iter().map(|d| *d).collect::<Vec<f64>>())
+                .map(|row| row.into_iter().copied().collect::<Vec<f64>>())
                 .collect::<Vec<Vec<f64>>>(),
             vec![vec![0.0, 1.0], vec![1.0, 0.0]]
         );
@@ -276,7 +276,7 @@ mod tests {
         assert_eq!(
             apd(unweighted(&graph4(), 1f32, 0.0))
                 .row_iter()
-                .map(|row| row.into_iter().map(|d| *d).collect::<Vec<f32>>())
+                .map(|row| row.into_iter().copied().collect::<Vec<f32>>())
                 .collect::<Vec<Vec<f32>>>(),
             Vec::<Vec<f32>>::new()
         );
@@ -298,7 +298,7 @@ mod tests {
             assert_eq!(
                 apd(unweighted(&graph, 1f32, 0.0))
                     .row_iter()
-                    .map(|row| row.into_iter().map(|d| *d).collect::<Vec<f32>>())
+                    .map(|row| row.into_iter().copied().collect::<Vec<f32>>())
                     .collect::<Vec<Vec<f32>>>(),
                 floyd_warshall(&graph, |edge| *edge.weight()).unwrap()
             );

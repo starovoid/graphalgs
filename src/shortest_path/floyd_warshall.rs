@@ -7,7 +7,7 @@ use petgraph::visit::{EdgeRef, IntoEdgeReferences, IntoNodeIdentifiers, NodeInde
 /// An algorithm error: a cycle of negative weights was found in the graph.
 // In the current version of petgraph, the NegativeCycle structure contains a private field,
 // which prevents its public use. With the correction of this error, this definition will be removed.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct NegativeCycle {}
 
 /// [Floyd–Warshall algorithm](https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm) for all pairs shortest path problem.

@@ -31,7 +31,7 @@ where
 {
     *shortest_distances(graph, node)
         .iter()
-        .max_by(|x, y| x.partial_cmp(&y).unwrap())
+        .max_by(|x, y| x.partial_cmp(y).unwrap())
         .unwrap()
 }
 
@@ -62,7 +62,7 @@ where
     graph
         .node_identifiers()
         .map(|i| eccentricity(graph, i))
-        .min_by(|x, y| x.partial_cmp(&y).unwrap())
+        .min_by(|x, y| x.partial_cmp(y).unwrap())
 }
 
 /// Graph diameter.
@@ -125,7 +125,7 @@ where
         .map(|i| eccentricity(graph, i))
         .collect::<Vec<f32>>();
 
-    match ecc.iter().min_by(|x, y| x.partial_cmp(&y).unwrap()) {
+    match ecc.iter().min_by(|x, y| x.partial_cmp(y).unwrap()) {
         None => vec![],
         Some(&r) => graph
             .node_identifiers()
@@ -160,7 +160,7 @@ where
         .map(|i| eccentricity(graph, i))
         .collect::<Vec<f32>>();
 
-    match ecc.iter().max_by(|x, y| x.partial_cmp(&y).unwrap()) {
+    match ecc.iter().max_by(|x, y| x.partial_cmp(y).unwrap()) {
         None => vec![], // There are no vertices in the graph.
         Some(&d) => graph
             .node_identifiers()
@@ -287,10 +287,10 @@ where
         .map(|dist| {
             *dist
                 .iter()
-                .max_by(|x, y| x.partial_cmp(&y).unwrap())
+                .max_by(|x, y| x.partial_cmp(y).unwrap())
                 .unwrap()
         })
-        .min_by(|x, y| x.partial_cmp(&y).unwrap())
+        .min_by(|x, y| x.partial_cmp(y).unwrap())
 }
 
 /// Weighted graph diameter.
@@ -416,7 +416,7 @@ where
         .map(|dist| {
             *dist
                 .iter()
-                .max_by(|x, y| x.partial_cmp(&y).unwrap())
+                .max_by(|x, y| x.partial_cmp(y).unwrap())
                 .unwrap()
         })
         .collect::<Vec<K>>();
@@ -424,7 +424,7 @@ where
     // Graph radius.
     let rad = *ecc
         .iter()
-        .min_by(|x, y| x.partial_cmp(&y).unwrap())
+        .min_by(|x, y| x.partial_cmp(y).unwrap())
         .unwrap();
 
     (0..graph.node_bound())
@@ -489,7 +489,7 @@ where
         .map(|dist| {
             *dist
                 .iter()
-                .max_by(|x, y| x.partial_cmp(&y).unwrap())
+                .max_by(|x, y| x.partial_cmp(y).unwrap())
                 .unwrap()
         })
         .collect::<Vec<K>>();
@@ -497,7 +497,7 @@ where
     // Graph diameter.
     let diam = *ecc
         .iter()
-        .max_by(|x, y| x.partial_cmp(&y).unwrap())
+        .max_by(|x, y| x.partial_cmp(y).unwrap())
         .unwrap();
 
     (0..graph.node_bound())
@@ -558,7 +558,7 @@ where
                 .map(|_| HashSet::<usize>::new())
                 .collect::<Vec<HashSet<usize>>>();
 
-            while stack.len() > 0 {
+            while !stack.is_empty() {
                 let current = stack.pop().unwrap();
 
                 if !used[current] {
@@ -596,7 +596,7 @@ where
             let mut depth = vec![0usize; graph.node_bound()];
             let mut inp = vec![None; graph.node_bound()];
 
-            while queue.len() > 0 {
+            while !queue.is_empty() {
                 let current = queue.pop_front().unwrap();
                 let d = depth[current] + 1;
 

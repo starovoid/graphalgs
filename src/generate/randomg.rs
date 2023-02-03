@@ -6,7 +6,7 @@ use std::collections::{HashMap, HashSet};
 
 /// Graph generation error: more edges are specified
 /// than is possible for a given number of vertices.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct EdgeNumberError {
     pub nodes: usize,
     pub nedges: usize,
@@ -45,8 +45,8 @@ pub fn random_digraph(
 
     if nedges > nodes * (nodes - 1) {
         return Err(EdgeNumberError {
-            nodes: nodes,
-            nedges: nedges,
+            nodes,
+            nedges,
             max_edges: nodes * (nodes - 1),
         });
     }
@@ -109,8 +109,8 @@ pub fn random_weighted_digraph<K: SampleUniform + PartialOrd + Copy>(
 
     if nedges > nodes * (nodes - 1) {
         return Err(EdgeNumberError {
-            nodes: nodes,
-            nedges: nedges,
+            nodes,
+            nedges,
             max_edges: nodes * (nodes - 1),
         });
     }
@@ -165,8 +165,8 @@ pub fn random_ungraph(
 
     if nedges > nodes * (nodes - 1) / 2 {
         return Err(EdgeNumberError {
-            nodes: nodes,
-            nedges: nedges,
+            nodes,
+            nedges,
             max_edges: nodes * (nodes - 1) / 2,
         });
     }
@@ -231,8 +231,8 @@ pub fn random_weighted_ungraph<K: SampleUniform + PartialOrd + Copy>(
 
     if nedges > nodes * (nodes - 1) / 2 {
         return Err(EdgeNumberError {
-            nodes: nodes,
-            nedges: nedges,
+            nodes,
+            nedges,
             max_edges: nodes * (nodes - 1) / 2,
         });
     }
