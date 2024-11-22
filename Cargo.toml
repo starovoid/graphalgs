@@ -1,13 +1,13 @@
 [package]
 name = "graphalgs"
-version = "0.1.1"
-authors = ["PrototypeRailGun <52821033+PrototypeRailGun@users.noreply.github.com>"]
+version = "0.1.2"
+authors = ["starovoid"]
 edition = "2021"
 license = "MIT"
 description="Graph algorithms based on the Rust 'petgraph' library."
 readme = "README.md"
-homepage="https://github.com/PrototypeRailGun/graphalgs"
-repository="https://github.com/PrototypeRailGun/graphalgs"
+homepage="https://github.com/starovoid/graphalgs"
+repository="https://github.com/starovoid/graphalgs"
 
 [lib]
 name = "graphalgs"
