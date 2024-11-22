@@ -1,6 +1,6 @@
 use nalgebra::base::DMatrix;
 use nalgebra::base::Scalar;
-use nalgebra::{ClosedAdd, ClosedSub};
+use nalgebra::{ClosedAddAssign, ClosedSubAssign};
 use num_traits::identities::Zero;
 
 use petgraph::visit::{
@@ -110,7 +110,7 @@ pub fn laplacian_matrix<G, F, W>(graph: G, mut edge_cost: F) -> DMatrix<W>
 where
     G: IntoEdges + IntoNodeIdentifiers + NodeCount + NodeIndexable + GraphProp,
     F: FnMut(G::EdgeRef) -> W,
-    W: Scalar + Copy + ClosedAdd + ClosedSub + Zero,
+    W: Scalar + Copy + ClosedAddAssign + ClosedSubAssign + Zero,
 {
     let mut kirch = DMatrix::from_element(graph.node_bound(), graph.node_bound(), W::zero());
     let mut diagonal = vec![W::zero(); graph.node_bound()];

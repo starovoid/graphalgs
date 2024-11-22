@@ -87,8 +87,7 @@ where
     // in the queue to be able to detect a negative cycle.
     let mut visits = vec![0; graph.node_bound()];
 
-    while !queue.is_empty() {
-        let i = queue.pop().unwrap();
+    while let Some(i) = queue.pop() {
         in_queue[ix(i)] = false;
 
         // In a graph without a negative cycle, no vertex can improve

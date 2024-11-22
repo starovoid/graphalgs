@@ -552,9 +552,7 @@ where
                 .map(|_| HashSet::<usize>::new())
                 .collect::<Vec<HashSet<usize>>>();
 
-            while !stack.is_empty() {
-                let current = stack.pop().unwrap();
-
+            while let Some(current) = stack.pop() {
                 if !used[current] {
                     used[current] = true;
                     let d = depth[current];

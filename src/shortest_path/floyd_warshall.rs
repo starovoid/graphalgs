@@ -317,12 +317,12 @@ mod tests {
             if fw_res.is_ok() {
                 let dist_matrix = fw_res.unwrap();
 
-                for v in 0..graph.node_count() {
+                for (v, fw_dist) in dist_matrix.into_iter().enumerate().take(graph.node_count()) {
                     let bf_res = bellman_ford(&graph, v.into());
                     assert!(bf_res.is_ok());
 
                     let dist = bf_res.unwrap().distances;
-                    assert_eq!(dist_matrix[v], dist);
+                    assert_eq!(fw_dist, dist);
                 }
             } else {
                 for v in 0..graph.node_count() {

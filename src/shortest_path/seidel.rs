@@ -1,6 +1,6 @@
 use crate::adj_matrix::unweighted;
-use nalgebra::base::{DMatrix, Scalar};
-use nalgebra::{ClosedAdd, ClosedMul};
+use nalgebra::base::{dimension::Dyn, DMatrix, Scalar};
+use nalgebra::{ClosedAddAssign, ClosedMulAssign};
 use num_traits::identities::{One, Zero};
 use petgraph::visit::{IntoEdges, IntoNodeIdentifiers, NodeCount, NodeIndexable};
 use std::ops::Sub;
@@ -126,18 +126,27 @@ where
 #[allow(non_snake_case)]
 pub fn apd<K>(A: DMatrix<K>) -> DMatrix<K>
 where
-    K: Scalar + Copy + ClosedAdd + ClosedMul + Zero + One + PartialOrd + Sub<K, Output = K>,
+    K: Scalar
+        + Copy
+        + ClosedAddAssign
+        + ClosedMulAssign
+        + Zero
+        + One
+        + PartialOrd
+        + Sub<K, Output = K>,
 {
     let n = A.nrows();
+    let nrows = Dyn(n);
+    let ncols = Dyn(n);
     if (0..n).all(|i| (0..n).all(|j| i == j || A[(i, j)] != K::zero())) {
         return A;
     }
 
     unsafe {
-        let mut Z = DMatrix::new_uninitialized(n, n).assume_init();
+        let mut Z = DMatrix::uninit(nrows, ncols).assume_init();
         A.mul_to(&A, &mut Z);
 
-        let mut B = DMatrix::new_uninitialized(n, n).assume_init();
+        let mut B = DMatrix::uninit(nrows, ncols).assume_init();
         for i in 0..n {
             for j in 0..n {
                 if i != j && (A[(i, j)] == K::one() || Z[(i, j)] > K::zero()) {
@@ -149,12 +158,12 @@ where
         }
 
         let T = apd(B);
-        let mut X = DMatrix::new_uninitialized(n, n).assume_init();
+        let mut X = DMatrix::uninit(nrows, ncols).assume_init();
         T.mul_to(&A, &mut X);
 
         let degree = A.row_iter().map(|row| row.sum()).collect::<Vec<K>>();
 
-        let mut D = DMatrix::new_uninitialized(n, n).assume_init();
+        let mut D = DMatrix::uninit(nrows, ncols).assume_init();
         for i in 0..n {
             for j in 0..n {
                 if X[(i, j)] >= T[(i, j)] * degree[j] {

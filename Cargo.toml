@@ -1,26 +1,26 @@
 [package]
 name = "graphalgs"
-version = "0.1.1"
-authors = ["PrototypeRailGun <52821033+PrototypeRailGun@users.noreply.github.com>"]
+version = "0.1.2"
+authors = ["starovoid"]
 edition = "2021"
 license = "MIT"
 description="Graph algorithms based on the Rust 'petgraph' library."
 readme = "README.md"
-homepage="https://github.com/PrototypeRailGun/graphalgs"
-repository="https://github.com/PrototypeRailGun/graphalgs"
+homepage="https://github.com/starovoid/graphalgs"
+repository="https://github.com/starovoid/graphalgs"
 
 [lib]
 name = "graphalgs"
 bench = false
 
 [dependencies]
-petgraph = "0.6.2"
-nalgebra = "0.25.1"
-rand = "0.8.3"
-num-traits = "0.2.14"
+petgraph = "0.6.5"
+nalgebra = "0.33"
+rand = "0.8"
+num-traits = "0.2"
 
 [dev-dependencies]
-criterion = "0.3"
+criterion = "0.5"
 
 [[bench]]
 name = "benchmarks"

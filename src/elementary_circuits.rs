@@ -11,7 +11,7 @@ enum Task {
 }
 
 fn elementary_circuits_starting_at_s<Ix>(
-    perfgraph: &Vec<Vec<usize>>,
+    perfgraph: &[Vec<usize>],
     is_precessor_of_s: &[bool],
     circuits: &mut Vec<Vec<NodeIndex<Ix>>>,
     s: usize,
