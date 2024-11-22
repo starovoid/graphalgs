@@ -14,13 +14,13 @@ name = "graphalgs"
 bench = false
 
 [dependencies]
-petgraph = "0.6.2"
-nalgebra = "0.25.1"
-rand = "0.8.3"
-num-traits = "0.2.14"
+petgraph = "0.6.5"
+nalgebra = "0.33"
+rand = "0.8"
+num-traits = "0.2"
 
 [dev-dependencies]
-criterion = "0.3"
+criterion = "0.5"
 
 [[bench]]
 name = "benchmarks"
