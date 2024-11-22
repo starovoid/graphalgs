@@ -112,7 +112,7 @@ where
 ///
 /// assert_eq!(prufer_decode(&vec![0, 100]), vec![]); // Invalid code
 /// ```
-pub fn prufer_decode(code: &Vec<usize>) -> Vec<(usize, usize)> {
+pub fn prufer_decode(code: &[usize]) -> Vec<(usize, usize)> {
     let n = code.len() + 2;
 
     let mut degree: Vec<usize> = vec![1; n];
@@ -179,15 +179,15 @@ mod test {
     }
 
     fn graph2() -> UnGraph<u8, ()> {
-        UnGraph::from_edges(&[(0, 1), (0, 2), (1, 3), (0, 4), (1, 5)])
+        UnGraph::from_edges([(0, 1), (0, 2), (1, 3), (0, 4), (1, 5)])
     }
 
     fn graph3() -> UnGraph<u8, ()> {
-        UnGraph::from_edges(&[(0, 3), (0, 5), (3, 4), (3, 1), (3, 2)])
+        UnGraph::from_edges([(0, 3), (0, 5), (3, 4), (3, 1), (3, 2)])
     }
 
     fn graph4() -> UnGraph<u8, ()> {
-        UnGraph::from_edges(&[(2, 0), (2, 1), (2, 3), (2, 4), (2, 5)])
+        UnGraph::from_edges([(2, 0), (2, 1), (2, 3), (2, 4), (2, 5)])
     }
 
     #[test]
@@ -216,7 +216,7 @@ mod test {
     #[test]
     fn test_prufer_decode() {
         assert_eq!(
-            prufer_decode(&vec![1, 1, 0, 0, 6, 0, 9, 9]),
+            prufer_decode(&[1, 1, 0, 0, 6, 0, 9, 9]),
             vec![
                 (2, 1),
                 (3, 1),
@@ -230,18 +230,18 @@ mod test {
             ],
         );
         assert_eq!(
-            prufer_decode(&vec![0, 1, 0, 1]),
+            prufer_decode(&[0, 1, 0, 1]),
             vec![(2, 0), (3, 1), (4, 0), (0, 1), (1, 5)]
         );
         assert_eq!(
-            prufer_decode(&vec![3, 3, 3, 0]),
+            prufer_decode(&[3, 3, 3, 0]),
             vec![(1, 3), (2, 3), (4, 3), (3, 0), (0, 5)]
         );
         assert_eq!(
-            prufer_decode(&vec![2, 2, 2, 2]),
+            prufer_decode(&[2, 2, 2, 2]),
             vec![(0, 2), (1, 2), (3, 2), (4, 2), (2, 5)]
         );
 
-        assert_eq!(prufer_decode(&vec![0, 1, 100, 200]), vec![]);
+        assert_eq!(prufer_decode(&[0, 1, 100, 200]), vec![]);
     }
 }
