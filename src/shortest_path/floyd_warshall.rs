@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::hash::Hash;
 
 pub use petgraph::algo::FloatMeasure;
-use petgraph::visit::{EdgeRef, IntoEdgeReferences, IntoNodeIdentifiers, NodeIndexable};
+use petgraph::visit::{EdgeRef, GraphProp, IntoEdgeReferences, IntoNodeIdentifiers, NodeIndexable};
 
 /// An algorithm error: a cycle of negative weights was found in the graph.
 // In the current version of petgraph, the NegativeCycle structure contains a private field,
@@ -54,7 +54,7 @@ pub struct NegativeCycle {}
 /// ```
 pub fn floyd_warshall<G, F, K>(graph: G, mut edge_cost: F) -> Result<Vec<Vec<K>>, NegativeCycle>
 where
-    G: IntoEdgeReferences + IntoNodeIdentifiers + NodeIndexable,
+    G: IntoEdgeReferences + IntoNodeIdentifiers + NodeIndexable + GraphProp,
     F: FnMut(G::EdgeRef) -> K,
     K: FloatMeasure,
 {
@@ -76,6 +76,9 @@ where
 
         if cost < dist[source][target] {
             dist[source][target] = cost;
+            if !graph.is_directed() {
+                dist[target][source] = cost;
+            }
         }
     }
 
@@ -160,7 +163,7 @@ mod tests {
     use crate::generate::random_weighted_digraph;
     use crate::shortest_path::bellman_ford;
     use petgraph::graph::{Graph, NodeIndex};
-    use petgraph::Directed;
+    use petgraph::{Directed, Undirected};
     use rand::Rng;
 
     fn graph1() -> Graph<(), f32> {
@@ -189,23 +192,26 @@ mod tests {
         graph
     }
 
-    fn graph2() -> Graph<(), f32> {
-        let mut graph = Graph::<(), f32>::new();
+    fn graph2() -> Graph<(), f32, Undirected> {
+        let mut graph = Graph::<(), f32, Undirected>::new_undirected();
         let n0 = graph.add_node(());
         let n1 = graph.add_node(());
         let n2 = graph.add_node(());
         let n3 = graph.add_node(());
         let n4 = graph.add_node(());
         let n5 = graph.add_node(());
+        let n6 = graph.add_node(());
+        let n7 = graph.add_node(());
 
         graph.add_edge(n0, n1, 1.0);
-        graph.add_edge(n5, n1, -4.0);
         graph.add_edge(n1, n4, 5.0);
         graph.add_edge(n4, n1, 5.0);
         graph.add_edge(n2, n1, 8.0);
         graph.add_edge(n4, n3, 10.0);
         graph.add_edge(n3, n2, 0.0);
-        graph.add_edge(n3, n2, -20.0);
+        graph.add_edge(n5, n6, 5.0);
+        graph.add_edge(n5, n7, 44.0);
+        graph.add_edge(n6, n7, 1.0);
 
         graph
     }
@@ -267,12 +273,14 @@ mod tests {
         assert_eq!(
             floyd_warshall(&graph2(), |edge| *edge.weight()),
             Ok(vec![
-                vec![0.0, 1.0, -4.0, 16.0, 6.0, inf],
-                vec![inf, 0.0, -5.0, 15.0, 5.0, inf],
-                vec![inf, 8.0, 0.0, 23.0, 13.0, inf],
-                vec![inf, -12.0, -20.0, 0.0, -7.0, inf],
-                vec![inf, -2.0, -10.0, 10.0, 0.0, inf],
-                vec![inf, -4.0, -9.0, 11.0, 1.0, 0.0],
+                vec![0.0, 1.0, 9.0, 9.0, 6.0, inf, inf, inf],
+                vec![1.0, 0.0, 8.0, 8.0, 5.0, inf, inf, inf],
+                vec![9.0, 8.0, 0.0, 0.0, 10.0, inf, inf, inf],
+                vec![9.0, 8.0, 0.0, 0.0, 10.0, inf, inf, inf],
+                vec![6.0, 5.0, 10.0, 10.0, 0.0, inf, inf, inf],
+                vec![inf, inf, inf, inf, inf, 0.0, 5.0, 6.0],
+                vec![inf, inf, inf, inf, inf, 5.0, 0.0, 1.0],
+                vec![inf, inf, inf, inf, inf, 6.0, 1.0, 0.0],
             ])
         );
 

@@ -267,7 +267,7 @@ where
 /// ```
 pub fn weighted_radius<G, F, K>(graph: G, edge_cost: F) -> Option<K>
 where
-    G: IntoEdgeReferences + IntoNodeIdentifiers + NodeIndexable + NodeCount,
+    G: IntoEdgeReferences + IntoNodeIdentifiers + NodeIndexable + NodeCount + GraphProp,
     F: FnMut(G::EdgeRef) -> K,
     K: FloatMeasure,
 {
@@ -332,7 +332,7 @@ where
 /// ```
 pub fn weighted_diameter<G, F, K>(graph: G, edge_cost: F) -> Option<K>
 where
-    G: IntoEdgeReferences + IntoNodeIdentifiers + NodeIndexable + NodeCount,
+    G: IntoEdgeReferences + IntoNodeIdentifiers + NodeIndexable + NodeCount + GraphProp,
     F: FnMut(G::EdgeRef) -> K,
     K: FloatMeasure,
 {
@@ -395,7 +395,7 @@ where
 /// ```
 pub fn weighted_center<G, F, K>(graph: G, edge_cost: F) -> Vec<G::NodeId>
 where
-    G: IntoEdgeReferences + IntoNodeIdentifiers + NodeIndexable + NodeCount,
+    G: IntoEdgeReferences + IntoNodeIdentifiers + NodeIndexable + NodeCount + GraphProp,
     F: FnMut(G::EdgeRef) -> K,
     K: FloatMeasure,
 {
@@ -465,7 +465,7 @@ where
 /// ```
 pub fn weighted_periphery<G, F, K>(graph: G, edge_cost: F) -> Vec<G::NodeId>
 where
-    G: IntoEdgeReferences + IntoNodeIdentifiers + NodeIndexable + NodeCount,
+    G: IntoEdgeReferences + IntoNodeIdentifiers + NodeIndexable + NodeCount + GraphProp,
     F: FnMut(G::EdgeRef) -> K,
     K: FloatMeasure,
 {
