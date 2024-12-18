@@ -95,7 +95,11 @@ mod tests {
             .collect::<HashSet<(usize, usize)>>();
 
         assert_eq!(complement(&graph1()), expected);
+    }
 
+    #[test]
+    #[cfg_attr(miri, ignore)]
+    fn test_complement_random() {
         for _ in 0..10 {
             let graph =
                 Graph::<(), (), Directed, usize>::from_edges(random_digraph(20, 150).unwrap());

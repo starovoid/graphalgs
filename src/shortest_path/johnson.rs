@@ -344,9 +344,11 @@ mod tests {
             Ok(vec![vec![0.0]])
         );
         assert_eq!(johnson(&graph5(), |edge| *edge.weight()), Ok(vec![]));
+    }
 
-        // Random tests
-
+    #[test]
+    #[cfg_attr(miri, ignore)]
+    fn test_johnson_random() {
         let mut rng = rand::thread_rng();
 
         for n in 2..=50 {

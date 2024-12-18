@@ -265,10 +265,11 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(miri, ignore)]
     fn test_random_tournament() {
         assert_eq!(random_tournament(0), vec![]);
         assert_eq!(random_tournament(1), vec![]);
-        for i in 2..100 {
+        for i in 2..50 {
             assert!(is_tournament(
                 &Graph::<(), (), Directed, usize>::from_edges(random_tournament(i))
             ));

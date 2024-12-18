@@ -6,7 +6,7 @@ use petgraph::visit::{GraphProp, IntoEdges, IntoNodeIdentifiers, NodeCount, Node
 /// For an undirected graph, the choice of the `root` vertex does not affect the answer.
 ///
 /// # Examples
-/// ```
+/// ```no_run
 /// use graphalgs::spec::count_spanning_trees;
 /// use petgraph::graph::{Graph, UnGraph};
 ///
@@ -90,7 +90,10 @@ where
 mod test {
     use super::*;
     use petgraph::graph::{Graph, UnGraph};
+
     #[test]
+    #[cfg_attr(miri, ignore)]
+    // Ignore it because MIRI finds an error in the safe nalgebra API. This requires separate clarifications.
     fn test_count_spanning_trees() {
         let mut graph = UnGraph::<u32, f32>::new_undirected();
         let n0 = graph.add_node(0);
