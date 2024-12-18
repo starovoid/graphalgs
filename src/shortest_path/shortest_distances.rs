@@ -202,9 +202,11 @@ mod tests {
             shortest_distances(&graph, graph.from_index(6)),
             vec![1.0, 1.0, 2.0, 3.0, 2.0, 1.0, 0.0]
         );
+    }
 
-        // Random tests
-
+    #[test]
+    #[cfg_attr(miri, ignore)]
+    fn test_shortest_distances_random() {
         let mut rng = rand::thread_rng();
 
         for n in 2..=50 {

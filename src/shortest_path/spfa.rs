@@ -266,8 +266,12 @@ mod tests {
 
         // |V| = 1
         assert_eq!(spfa(&graph4(), 0.into()).unwrap().0, vec![0.0]);
+    }
 
-        // Random tests
+    #[test]
+    #[cfg_attr(miri, ignore)]
+    fn test_spfa_random() {
+        // Random tests against bellman_ford
         let mut rng = rand::thread_rng();
 
         for n in 2..=50 {

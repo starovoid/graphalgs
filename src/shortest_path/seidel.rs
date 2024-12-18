@@ -289,8 +289,11 @@ mod tests {
                 .collect::<Vec<Vec<f32>>>(),
             Vec::<Vec<f32>>::new()
         );
+    }
 
-        // Random tests
+    #[test]
+    #[cfg_attr(miri, ignore)]
+    fn test_apd_random() {
         let mut rng = rand::thread_rng();
 
         for n in 2..=50 {
@@ -340,8 +343,11 @@ mod tests {
         // Edge cases
         assert_eq!(seidel(&graph3()), vec![vec![0, 1], vec![1, 0]]);
         assert_eq!(seidel(&graph4()), Vec::<Vec<u32>>::new());
+    }
 
-        // Random tests
+    #[test]
+    #[cfg_attr(miri, ignore)]
+    fn test_seidel_random() {
         let mut rng = rand::thread_rng();
 
         for n in 2..=50 {

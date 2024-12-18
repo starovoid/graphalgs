@@ -149,7 +149,7 @@ mod tests {
     }
 
     #[test]
-    fn test_prim() {
+    fn test_boruvka() {
         assert_eq!(
             boruvka(&graph1(), |edge| *edge.weight()),
             vec![(0, 4), (1, 4), (1, 3), (2, 3)]
@@ -174,7 +174,11 @@ mod tests {
                 .into_iter()
                 .collect::<HashSet<(usize, usize)>>()
         );
+    }
 
+    #[test]
+    #[cfg_attr(miri, ignore)]
+    fn test_with_prim_random() {
         for _ in 0..20 {
             let graph: UnGraph<(), f64, usize> = UnGraph::from_edges(
                 random_weighted_ungraph(50, 1000, -100.0, 100.0)

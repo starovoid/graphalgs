@@ -307,9 +307,11 @@ mod tests {
             Ok(vec![vec![0.0]])
         );
         assert_eq!(floyd_warshall(&graph5(), |edge| *edge.weight()), Ok(vec![]));
+    }
 
-        // Random tests
-
+    #[test]
+    #[cfg_attr(miri, ignore)]
+    fn test_floyd_warshall_random() {
         let mut rng = rand::thread_rng();
 
         for n in 2..=50 {
