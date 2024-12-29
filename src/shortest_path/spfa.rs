@@ -125,7 +125,84 @@ mod tests {
     use petgraph::Directed;
     use rand::Rng;
 
-    fn graph1() -> Graph<(), f32> {
+    fn graph1() -> Graph<(), f64> {
+        let mut graph = Graph::<(), f64>::new();
+        let n0 = graph.add_node(());
+        let n1 = graph.add_node(());
+        let n2 = graph.add_node(());
+        let n3 = graph.add_node(());
+
+        graph.add_edge(n0, n1, 10.0);
+        graph.add_edge(n0, n2, 5.0);
+        graph.add_edge(n1, n2, 2.0);
+        graph.add_edge(n2, n3, -10.0);
+        graph.add_edge(n3, n1, -1.0);
+        graph.add_edge(n1, n3, 16.0);
+
+        graph
+    }
+
+    fn graph2() -> Graph<(), f32> {
+        let mut graph = Graph::<(), f32>::new();
+        let n0 = graph.add_node(());
+        let n1 = graph.add_node(());
+        let n2 = graph.add_node(());
+
+        graph.add_edge(n0, n1, 1.0);
+        graph.add_edge(n1, n0, -10.0);
+        graph.add_edge(n2, n2, 5.0);
+        graph
+    }
+
+    #[test]
+    fn test_spfa() {
+        let inf = f32::INFINITY;
+
+        let mut graph = Graph::<(), f32>::new();
+        let n0 = graph.add_node(());
+        let n1 = graph.add_node(());
+        let n2 = graph.add_node(());
+        let n3 = graph.add_node(());
+        let n4 = graph.add_node(());
+        let n5 = graph.add_node(());
+
+        graph.add_edge(n0, n1, 1.0);
+        graph.add_edge(n5, n1, -4.0);
+        graph.add_edge(n1, n4, 5.0);
+        graph.add_edge(n4, n1, 5.0);
+        graph.add_edge(n2, n1, 8.0);
+        graph.add_edge(n4, n3, 10.0);
+        graph.add_edge(n3, n2, 0.0);
+        graph.add_edge(n3, n2, -20.0);
+
+        assert_eq!(
+            spfa(&graph, 0.into()).unwrap().0,
+            vec![0.0, 1.0, -4.0, 16.0, 6.0, inf]
+        );
+        assert_eq!(
+            spfa(&graph, 1.into()).unwrap().0,
+            vec![inf, 0.0, -5.0, 15.0, 5.0, inf]
+        );
+        assert_eq!(
+            spfa(&graph, 2.into()).unwrap().0,
+            vec![inf, 8.0, 0.0, 23.0, 13.0, inf]
+        );
+        assert_eq!(
+            spfa(&graph, 3.into()).unwrap().0,
+            vec![inf, -12.0, -20.0, 0.0, -7.0, inf]
+        );
+        assert_eq!(
+            spfa(&graph, 4.into()).unwrap().0,
+            vec![inf, -2.0, -10.0, 10.0, 0.0, inf]
+        );
+        assert_eq!(
+            spfa(&graph, 5.into()).unwrap().0,
+            vec![inf, -4.0, -9.0, 11.0, 1.0, 0.0]
+        );
+    }
+
+    #[test]
+    fn test_spfa_strongly_connected() {
         let mut graph = Graph::<(), f32>::new();
         let n0 = graph.add_node(());
         let n1 = graph.add_node(());
@@ -148,124 +225,39 @@ mod tests {
         graph.add_edge(n4, n1, 15.0);
         graph.add_edge(n4, n3, 20.0);
 
-        graph
-    }
-
-    fn graph2() -> Graph<(), f32> {
-        let mut graph = Graph::<(), f32>::new();
-        let n0 = graph.add_node(());
-        let n1 = graph.add_node(());
-        let n2 = graph.add_node(());
-        let n3 = graph.add_node(());
-        let n4 = graph.add_node(());
-        let n5 = graph.add_node(());
-
-        graph.add_edge(n0, n1, 1.0);
-        graph.add_edge(n5, n1, -4.0);
-        graph.add_edge(n1, n4, 5.0);
-        graph.add_edge(n4, n1, 5.0);
-        graph.add_edge(n2, n1, 8.0);
-        graph.add_edge(n4, n3, 10.0);
-        graph.add_edge(n3, n2, 0.0);
-        graph.add_edge(n3, n2, -20.0);
-
-        graph
-    }
-
-    fn graph3() -> Graph<(), f64> {
-        let mut graph = Graph::<(), f64>::new();
-        let n0 = graph.add_node(());
-        let n1 = graph.add_node(());
-        let n2 = graph.add_node(());
-        let n3 = graph.add_node(());
-
-        graph.add_edge(n0, n1, 10.0);
-        graph.add_edge(n0, n2, 5.0);
-        graph.add_edge(n1, n2, 2.0);
-        graph.add_edge(n2, n3, -10.0);
-        graph.add_edge(n3, n1, -1.0);
-        graph.add_edge(n1, n3, 16.0);
-
-        graph
-    }
-
-    fn graph4() -> Graph<(), f32> {
-        let mut graph = Graph::<(), f32>::new();
-        graph.add_node(());
-        graph
-    }
-
-    fn graph5() -> Graph<(), f32> {
-        let mut graph = Graph::<(), f32>::new();
-        let n0 = graph.add_node(());
-        let n1 = graph.add_node(());
-        let n2 = graph.add_node(());
-
-        graph.add_edge(n0, n1, 1.0);
-        graph.add_edge(n1, n0, -10.0);
-        graph.add_edge(n2, n2, 5.0);
-        graph
-    }
-
-    #[test]
-    fn test_spfa() {
-        let inf = f32::INFINITY;
-
-        // graph1
-        println!("{:?}", spfa(&graph1(), 4.into()));
         assert_eq!(
-            spfa(&graph1(), 0.into()).unwrap().0,
+            spfa(&graph, 0.into()).unwrap().0,
             vec![0.0, 33.0, 52.0, 38.0, 18.0]
         );
         assert_eq!(
-            spfa(&graph1(), 1.into()).unwrap().0,
+            spfa(&graph, 1.into()).unwrap().0,
             vec![33.0, 0.0, 20.0, 6.0, 15.0]
         );
         assert_eq!(
-            spfa(&graph1(), 2.into()).unwrap().0,
+            spfa(&graph, 2.into()).unwrap().0,
             vec![52.0, 20.0, 0.0, 14.0, 34.0]
         );
         assert_eq!(
-            spfa(&graph1(), 3.into()).unwrap().0,
+            spfa(&graph, 3.into()).unwrap().0,
             vec![38.0, 6.0, 14.0, 0.0, 20.0]
         );
         assert_eq!(
-            spfa(&graph1(), 4.into()).unwrap().0,
+            spfa(&graph, 4.into()).unwrap().0,
             vec![18.0, 15.0, 34.0, 20.0, 0.0]
         );
+    }
 
-        // graph 2
-        assert_eq!(
-            spfa(&graph2(), 0.into()).unwrap().0,
-            vec![0.0, 1.0, -4.0, 16.0, 6.0, inf]
-        );
-        assert_eq!(
-            spfa(&graph2(), 1.into()).unwrap().0,
-            vec![inf, 0.0, -5.0, 15.0, 5.0, inf]
-        );
-        assert_eq!(
-            spfa(&graph2(), 2.into()).unwrap().0,
-            vec![inf, 8.0, 0.0, 23.0, 13.0, inf]
-        );
-        assert_eq!(
-            spfa(&graph2(), 3.into()).unwrap().0,
-            vec![inf, -12.0, -20.0, 0.0, -7.0, inf]
-        );
-        assert_eq!(
-            spfa(&graph2(), 4.into()).unwrap().0,
-            vec![inf, -2.0, -10.0, 10.0, 0.0, inf]
-        );
-        assert_eq!(
-            spfa(&graph2(), 5.into()).unwrap().0,
-            vec![inf, -4.0, -9.0, 11.0, 1.0, 0.0]
-        );
+    #[test]
+    fn test_spfa_single_node() {
+        let mut graph = Graph::<(), f32>::new();
+        graph.add_node(());
+        assert_eq!(spfa(&graph, 0.into()).unwrap().0, vec![0.0]);
+    }
 
-        // Graphs with negative cycle
-        assert!(spfa(&graph3(), 0.into()).is_err());
-        assert!(spfa(&graph5(), 0.into()).is_err());
-
-        // |V| = 1
-        assert_eq!(spfa(&graph4(), 0.into()).unwrap().0, vec![0.0]);
+    #[test]
+    fn test_spfa_negative_cycle() {
+        assert!(spfa(&graph1(), 0.into()).is_err());
+        assert!(spfa(&graph2(), 0.into()).is_err());
     }
 
     #[test]
