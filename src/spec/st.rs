@@ -94,7 +94,7 @@ mod test {
     #[test]
     #[cfg_attr(miri, ignore)]
     // Ignore it because MIRI finds an error in the safe nalgebra API. This requires separate clarifications.
-    fn test_count_spanning_trees() {
+    fn test_count_spanning_trees_ungraph() {
         let mut graph = UnGraph::<u32, f32>::new_undirected();
         let n0 = graph.add_node(0);
         assert_eq!(count_spanning_trees(&graph, n0), 1);
@@ -121,7 +121,12 @@ mod test {
         assert_eq!(count_spanning_trees(&graph, n1), 13);
         assert_eq!(count_spanning_trees(&graph, n2), 13);
         assert_eq!(count_spanning_trees(&graph, n3), 13);
+    }
 
+    #[test]
+    #[cfg_attr(miri, ignore)]
+    // Ignore it because MIRI finds an error in the safe nalgebra API. This require separate clarifications.
+    fn test_count_spanning_trees_digraph() {
         let mut digraph = Graph::<u32, f32>::new();
         let n0 = digraph.add_node(0);
         assert_eq!(count_spanning_trees(&digraph, n0), 1);
