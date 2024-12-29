@@ -240,10 +240,6 @@ mod tests {
         graph
     }
 
-    fn graph4() -> Graph<(), f32> {
-        Graph::<(), f32>::new()
-    }
-
     #[test]
     fn test_apd() {
         assert_eq!(
@@ -272,22 +268,28 @@ mod tests {
                 vec![2, 1, 1, 0],
             ]
         );
+    }
 
-        // Edge cases
+    #[test]
+    fn test_apd_empty_graph() {
+        let graph = Graph::<(), f32>::new();
+        assert_eq!(
+            apd(unweighted(&graph, 1f32, 0.0))
+                .row_iter()
+                .map(|row| row.into_iter().copied().collect::<Vec<f32>>())
+                .collect::<Vec<Vec<f32>>>(),
+            Vec::<Vec<f32>>::new()
+        );
+    }
+
+    #[test]
+    fn test_apd_single_edge() {
         assert_eq!(
             apd(unweighted(&graph3(), 1f64, 0.0))
                 .row_iter()
                 .map(|row| row.into_iter().copied().collect::<Vec<f64>>())
                 .collect::<Vec<Vec<f64>>>(),
             vec![vec![0.0, 1.0], vec![1.0, 0.0]]
-        );
-
-        assert_eq!(
-            apd(unweighted(&graph4(), 1f32, 0.0))
-                .row_iter()
-                .map(|row| row.into_iter().copied().collect::<Vec<f32>>())
-                .collect::<Vec<Vec<f32>>>(),
-            Vec::<Vec<f32>>::new()
         );
     }
 
@@ -339,10 +341,16 @@ mod tests {
                 vec![2, 1, 1, 0],
             ]
         );
+    }
 
-        // Edge cases
+    #[test]
+    fn test_seidel_single_edge() {
         assert_eq!(seidel(&graph3()), vec![vec![0, 1], vec![1, 0]]);
-        assert_eq!(seidel(&graph4()), Vec::<Vec<u32>>::new());
+    }
+
+    #[test]
+    fn test_seidel_empty_graph() {
+        assert_eq!(seidel(&Graph::<(), f32>::new()), Vec::<Vec<u32>>::new());
     }
 
     #[test]

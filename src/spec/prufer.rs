@@ -152,69 +152,53 @@ mod test {
     use super::*;
     use petgraph::graph::UnGraph;
 
-    fn graph1() -> UnGraph<u8, f32> {
-        let mut graph = UnGraph::<u8, f32>::new_undirected();
-        let n0 = graph.add_node(0);
-        let n1 = graph.add_node(1);
-        let n2 = graph.add_node(2);
-        let n3 = graph.add_node(3);
-        let n4 = graph.add_node(4);
-        let n5 = graph.add_node(5);
-        let n6 = graph.add_node(6);
-        let n7 = graph.add_node(7);
-        let n8 = graph.add_node(8);
-        let n9 = graph.add_node(9);
-
-        graph.add_edge(n0, n1, 1.0);
-        graph.add_edge(n0, n4, 2.0);
-        graph.add_edge(n0, n6, 3.0);
-        graph.add_edge(n6, n5, 4.0);
-        graph.add_edge(n1, n2, 5.0);
-        graph.add_edge(n1, n3, 6.0);
-        graph.add_edge(n0, n9, 7.0);
-        graph.add_edge(n9, n7, 8.0);
-        graph.add_edge(n8, n9, 9.0);
-
-        graph
-    }
-
-    fn graph2() -> UnGraph<u8, ()> {
-        UnGraph::from_edges([(0, 1), (0, 2), (1, 3), (0, 4), (1, 5)])
-    }
-
-    fn graph3() -> UnGraph<u8, ()> {
-        UnGraph::from_edges([(0, 3), (0, 5), (3, 4), (3, 1), (3, 2)])
-    }
-
-    fn graph4() -> UnGraph<u8, ()> {
-        UnGraph::from_edges([(2, 0), (2, 1), (2, 3), (2, 4), (2, 5)])
-    }
-
     #[test]
-    fn test_prufer_code() {
-        let graph = graph1();
+    fn test_prufer_code_case_1() {
+        let graph = UnGraph::<u32, ()>::from_edges([
+            (0, 1),
+            (0, 4),
+            (0, 6),
+            (6, 5),
+            (1, 2),
+            (1, 3),
+            (0, 9),
+            (9, 7),
+            (8, 9),
+        ]);
 
         let ix = |i| graph.from_index(i);
         assert_eq!(
             prufer_code(&graph),
             vec![ix(1), ix(1), ix(0), ix(0), ix(6), ix(0), ix(9), ix(9)]
         );
+    }
 
-        let graph = graph2();
+    #[test]
+    fn test_prufer_code_case_2() {
+        let graph = UnGraph::<u32, ()>::from_edges([(0, 1), (0, 2), (1, 3), (0, 4), (1, 5)]);
+
         let ix = |i| graph.from_index(i);
         assert_eq!(prufer_code(&graph), vec![ix(0), ix(1), ix(0), ix(1)]);
+    }
 
-        let graph = graph3();
+    #[test]
+    fn test_prufer_code_case_3() {
+        let graph = UnGraph::<u32, ()>::from_edges([(0, 3), (0, 5), (3, 4), (3, 1), (3, 2)]);
+
         let ix = |i| graph.from_index(i);
         assert_eq!(prufer_code(&graph), vec![ix(3), ix(3), ix(3), ix(0)]);
+    }
 
-        let graph = graph4();
+    #[test]
+    fn test_prufer_code_case_4() {
+        let graph = UnGraph::<u32, ()>::from_edges([(2, 0), (2, 1), (2, 3), (2, 4), (2, 5)]);
+
         let ix = |i| graph.from_index(i);
         assert_eq!(prufer_code(&graph), vec![ix(2), ix(2), ix(2), ix(2)]);
     }
 
     #[test]
-    fn test_prufer_decode() {
+    fn test_prufer_decode_case_1() {
         assert_eq!(
             prufer_decode(&[1, 1, 0, 0, 6, 0, 9, 9]),
             vec![
@@ -229,19 +213,33 @@ mod test {
                 (8, 9)
             ],
         );
+    }
+    #[test]
+    fn test_prufer_decode_case_2() {
         assert_eq!(
             prufer_decode(&[0, 1, 0, 1]),
             vec![(2, 0), (3, 1), (4, 0), (0, 1), (1, 5)]
         );
+    }
+
+    #[test]
+    fn test_prufer_decode_case_3() {
         assert_eq!(
             prufer_decode(&[3, 3, 3, 0]),
             vec![(1, 3), (2, 3), (4, 3), (3, 0), (0, 5)]
         );
+    }
+
+    #[test]
+    fn test_prufer_decode_case_4() {
         assert_eq!(
             prufer_decode(&[2, 2, 2, 2]),
             vec![(0, 2), (1, 2), (3, 2), (4, 2), (2, 5)]
         );
+    }
 
+    #[test]
+    fn test_prufer_decode_no_graph() {
         assert_eq!(prufer_decode(&[0, 1, 100, 200]), vec![]);
     }
 }

@@ -178,7 +178,7 @@ mod tests {
 
     #[test]
     #[cfg_attr(miri, ignore)]
-    fn test_with_prim_random() {
+    fn test_boruvka_with_prim_random_50_1000() {
         for _ in 0..20 {
             let graph: UnGraph<(), f64, usize> = UnGraph::from_edges(
                 random_weighted_ungraph(50, 1000, -100.0, 100.0)
@@ -186,30 +186,19 @@ mod tests {
                     .into_iter()
                     .map(|(edge, w)| (edge.0, edge.1, w)),
             );
-            let mut boruvka_output = boruvka(&graph, |edge| *edge.weight());
-            let mut prim_output = prim(&graph, |edge| *edge.weight())
+
+            let boruvka_output = boruvka(&graph, |edge| *edge.weight());
+            let prim_output = prim(&graph, |edge| *edge.weight())
                 .into_iter()
                 .collect::<HashSet<(usize, usize)>>();
 
-            let mut temp = HashSet::<(usize, usize)>::new();
-            for edge in boruvka_output.iter() {
-                temp.insert((edge.1, edge.0));
-            }
-            for edge in temp.into_iter() {
-                boruvka_output.insert(edge);
-            }
-
-            let mut temp = HashSet::<(usize, usize)>::new();
-            for edge in prim_output.iter() {
-                temp.insert((edge.1, edge.0));
-            }
-            for edge in temp.into_iter() {
-                prim_output.insert(edge);
-            }
-
-            assert_eq!(boruvka_output, prim_output);
+            compare(boruvka_output, prim_output);
         }
+    }
 
+    #[test]
+    #[cfg_attr(miri, ignore)]
+    fn test_boruvka_with_prim_random_500_250() {
         for _ in 0..20 {
             let graph: UnGraph<(), f64, usize> = UnGraph::from_edges(
                 random_weighted_ungraph(500, 250, -100.0, 100.0)
@@ -217,30 +206,18 @@ mod tests {
                     .into_iter()
                     .map(|(edge, w)| (edge.0, edge.1, w)),
             );
-            let mut boruvka_output = boruvka(&graph, |edge| *edge.weight());
-            let mut prim_output = prim(&graph, |edge| *edge.weight())
+
+            let boruvka_output = boruvka(&graph, |edge| *edge.weight());
+            let prim_output = prim(&graph, |edge| *edge.weight())
                 .into_iter()
                 .collect::<HashSet<(usize, usize)>>();
 
-            let mut temp = HashSet::<(usize, usize)>::new();
-            for edge in boruvka_output.iter() {
-                temp.insert((edge.1, edge.0));
-            }
-            for edge in temp.into_iter() {
-                boruvka_output.insert(edge);
-            }
-
-            let mut temp = HashSet::<(usize, usize)>::new();
-            for edge in prim_output.iter() {
-                temp.insert((edge.1, edge.0));
-            }
-            for edge in temp.into_iter() {
-                prim_output.insert(edge);
-            }
-
-            assert_eq!(boruvka_output, prim_output);
+            compare(boruvka_output, prim_output);
         }
-
+    }
+    #[test]
+    #[cfg_attr(miri, ignore)]
+    fn test_boruvka_with_prim_random_10_30() {
         for _ in 0..100 {
             let graph: UnGraph<(), f64, usize> = UnGraph::from_edges(
                 random_weighted_ungraph(10, 30, -100.0, 100.0)
@@ -248,28 +225,26 @@ mod tests {
                     .into_iter()
                     .map(|(edge, w)| (edge.0, edge.1, w)),
             );
-            let mut boruvka_output = boruvka(&graph, |edge| *edge.weight());
-            let mut prim_output = prim(&graph, |edge| *edge.weight())
+
+            let boruvka_output = boruvka(&graph, |edge| *edge.weight());
+            let prim_output = prim(&graph, |edge| *edge.weight())
                 .into_iter()
                 .collect::<HashSet<(usize, usize)>>();
 
-            let mut temp = HashSet::<(usize, usize)>::new();
-            for edge in boruvka_output.iter() {
-                temp.insert((edge.1, edge.0));
-            }
-            for edge in temp.into_iter() {
-                boruvka_output.insert(edge);
-            }
-
-            let mut temp = HashSet::<(usize, usize)>::new();
-            for edge in prim_output.iter() {
-                temp.insert((edge.1, edge.0));
-            }
-            for edge in temp.into_iter() {
-                prim_output.insert(edge);
-            }
-
-            assert_eq!(boruvka_output, prim_output);
+            compare(boruvka_output, prim_output);
         }
+    }
+
+    fn compare(
+        mut boruvka_edges: HashSet<(usize, usize)>,
+        mut prim_edges: HashSet<(usize, usize)>,
+    ) {
+        let temp: HashSet<(usize, usize)> = boruvka_edges.iter().map(|&(a, b)| (b, a)).collect();
+        boruvka_edges.extend(temp);
+
+        let temp: HashSet<(usize, usize)> = prim_edges.iter().map(|&(a, b)| (b, a)).collect();
+        prim_edges.extend(temp);
+
+        assert_eq!(boruvka_edges, prim_edges);
     }
 }

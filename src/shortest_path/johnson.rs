@@ -279,10 +279,6 @@ mod tests {
     }
 
     fn graph5() -> Graph<(), f32> {
-        Graph::<(), f32>::new()
-    }
-
-    fn graph6() -> Graph<(), f32> {
         let mut graph = Graph::<(), f32>::new();
         let n0 = graph.add_node(());
         let n1 = graph.add_node(());
@@ -295,9 +291,7 @@ mod tests {
     }
 
     #[test]
-    fn test_johnson() {
-        let inf = f32::INFINITY;
-
+    fn test_johnson_fully_connected() {
         assert_eq!(
             johnson(&graph1(), |edge| *edge.weight()),
             Ok(vec![
@@ -308,6 +302,11 @@ mod tests {
                 vec![18.0, 15.0, 34.0, 20.0, 0.0]
             ])
         );
+    }
+
+    #[test]
+    fn test_johnson() {
+        let inf = f32::INFINITY;
 
         assert_eq!(
             johnson(&graph2(), |edge| *edge.weight()),
@@ -320,14 +319,31 @@ mod tests {
                 vec![inf, -4.0, -9.0, 11.0, 1.0, 0.0],
             ])
         );
+    }
 
-        // Graphs with negative cycle
+    #[test]
+    fn test_johnson_empty_graph() {
+        let graph = Graph::<(), f32>::new();
+        assert_eq!(johnson(&graph, |edge| *edge.weight()), Ok(vec![]));
+    }
+
+    #[test]
+    fn test_johnson_single_node() {
+        assert_eq!(
+            johnson(&graph4(), |edge| *edge.weight()),
+            Ok(vec![vec![0.0]])
+        );
+    }
+
+    #[test]
+    fn test_johnson_negative_cycle() {
         assert_eq!(
             johnson(&graph3(), |edge| *edge.weight()),
             Err(NegativeCycle {})
         );
+
         assert_eq!(
-            johnson(&graph6(), |edge| *edge.weight()),
+            johnson(&graph5(), |edge| *edge.weight()),
             Err(NegativeCycle {})
         );
 
@@ -337,13 +353,6 @@ mod tests {
             johnson(&graph, |edge| *edge.weight()),
             Err(NegativeCycle {})
         );
-
-        // Edge cases
-        assert_eq!(
-            johnson(&graph4(), |edge| *edge.weight()),
-            Ok(vec![vec![0.0]])
-        );
-        assert_eq!(johnson(&graph5(), |edge| *edge.weight()), Ok(vec![]));
     }
 
     #[test]

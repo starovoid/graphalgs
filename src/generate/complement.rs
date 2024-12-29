@@ -71,7 +71,8 @@ mod tests {
     use petgraph::graph::Graph;
     use petgraph::Directed;
 
-    fn graph1() -> Graph<(), ()> {
+    #[test]
+    fn test_complement() {
         let mut graph = Graph::<(), ()>::new();
         let n0 = graph.add_node(());
         let n1 = graph.add_node(());
@@ -85,16 +86,11 @@ mod tests {
         graph.add_edge(n1, n3, ());
         graph.add_edge(n3, n1, ());
 
-        graph
-    }
-
-    #[test]
-    fn test_complement() {
         let expected = vec![(0, 2), (2, 0), (0, 3), (3, 0), (2, 3), (3, 2)]
             .into_iter()
             .collect::<HashSet<(usize, usize)>>();
 
-        assert_eq!(complement(&graph1()), expected);
+        assert_eq!(complement(&graph), expected);
     }
 
     #[test]

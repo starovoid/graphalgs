@@ -125,7 +125,7 @@ mod test {
     }
 
     #[test]
-    fn test_unweighted() {
+    fn test_unweighted_trivial() {
         let graph = Graph::<char, f64>::new();
         let am = unweighted(&graph, 1f64, 0f64);
         assert_eq!(am, DMatrix::from_element(0, 0, 0.0));
@@ -134,108 +134,140 @@ mod test {
         graph.add_node('a');
         let am = unweighted(&graph, 1f64, 0f64);
         assert_eq!(am, DMatrix::from_element(1, 1, 0.0));
+    }
 
-        let mut graph = Graph::new_undirected();
-        let a = graph.add_node('a');
-        let b = graph.add_node('b');
-        let c = graph.add_node('c');
-        graph.add_edge(a, b, 1f64);
-        graph.add_edge(a, c, 2f64);
-        graph.add_edge(c, b, 3f64);
-        let am = unweighted(&graph, 1f64, 0f64);
-        assert_eq!(
-            am,
-            Matrix3::new(0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0)
-        );
-
+    #[test]
+    fn test_unweighted_graph_directed() {
         let mut graph = Graph::new();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
+
         graph.add_edge(a, b, 1f64);
         graph.add_edge(a, c, 2f64);
         graph.add_edge(c, b, 3f64);
-        let am = unweighted(&graph, 1f64, 0f64);
+
         assert_eq!(
-            am,
+            unweighted(&graph, 1f64, 0f64),
             Matrix3::new(0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
         );
+    }
 
+    #[test]
+    fn test_unweighted_graph_undirected() {
+        let mut graph = Graph::new_undirected();
+        let a = graph.add_node('a');
+        let b = graph.add_node('b');
+        let c = graph.add_node('c');
+
+        graph.add_edge(a, b, 1f64);
+        graph.add_edge(a, c, 2f64);
+        graph.add_edge(c, b, 3f64);
+
+        assert_eq!(
+            unweighted(&graph, 1f64, 0f64),
+            Matrix3::new(0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0)
+        );
+    }
+
+    #[test]
+    fn test_unweighted_matrix_directed() {
         let mut graph = MatrixGraph::new();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
+
         graph.add_edge(a, b, 1i64);
         graph.add_edge(a, c, 2i64);
         graph.add_edge(c, b, 3i64);
-        let am = unweighted(&graph, true, false);
+
         assert_eq!(
-            am,
+            unweighted(&graph, true, false),
             Matrix3::new(false, true, true, false, false, false, false, true, false)
         );
+    }
 
+    #[test]
+    fn test_unweighted_matrix_undirected() {
         let mut graph = MatrixGraph::new_undirected();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
+
         graph.add_edge(a, b, 1f64);
         graph.add_edge(a, c, 2f64);
         graph.add_edge(c, b, 3f64);
-        let am = unweighted(&graph, 1f64, 0f64);
+
         assert_eq!(
-            am,
+            unweighted(&graph, 1f64, 0f64),
             Matrix3::new(0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0)
         );
+    }
 
+    #[test]
+    fn test_unweighted_csr() {
         let mut graph = Csr::<char, f64>::new();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
+
         graph.add_edge(a, b, 1f64);
         graph.add_edge(a, c, 2f64);
         graph.add_edge(c, b, 3f64);
-        let am = unweighted(&graph, 1f64, 0f64);
+
         assert_eq!(
-            am,
+            unweighted(&graph, 1f64, 0f64),
             Matrix3::new(0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
         );
+    }
 
+    #[test]
+    fn test_unweighted_graphmap_directed() {
         let mut graph = DiGraphMap::<char, f64>::new();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
+
         graph.add_edge(a, b, 1f64);
         graph.add_edge(a, c, 2f64);
         graph.add_edge(c, b, 3f64);
-        let am = unweighted(&graph, 1f64, 0f64);
+
         assert_eq!(
-            am,
+            unweighted(&graph, 1f64, 0f64),
             Matrix3::new(0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
         );
+    }
 
+    #[test]
+    fn test_unweighted_graphmap_undirected() {
         let mut graph = UnGraphMap::<char, f64>::new();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
+
         graph.add_edge(a, b, 1f64);
         graph.add_edge(a, c, 2f64);
         graph.add_edge(c, b, 3f64);
-        let am = unweighted(&graph, 1f64, 0f64);
+
         assert_eq!(
-            am,
+            unweighted(&graph, 1f64, 0f64),
             Matrix3::new(0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0)
         );
+    }
 
+    #[test]
+    fn test_unweighted_stable_graph() {
         let mut graph = StableGraph::new();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
+
         graph.add_edge(a, b, 1f64);
         graph.add_edge(a, c, 2f64);
         graph.add_edge(c, b, 3f64);
-        let am = unweighted(&graph, 1f64, 0f64);
+
         assert_eq!(
-            am,
+            unweighted(&graph, 1f64, 0f64),
             Matrix3::new(0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
         );
 
@@ -248,108 +280,137 @@ mod test {
     }
 
     #[test]
-    fn test_weighted() {
+    fn test_weighted_graph_undirected() {
         let mut graph = Graph::new_undirected();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
+
         graph.add_edge(a, b, 1f64);
         graph.add_edge(a, c, 2f64);
         graph.add_edge(c, b, 3f64);
-        let am = weighted(&graph, 0f64, float_to_scalar);
+
         assert_eq!(
-            am,
+            weighted(&graph, 0f64, float_to_scalar),
             Matrix3::new(0.0, 1.0, 2.0, 1.0, 0.0, 3.0, 2.0, 3.0, 0.0)
         );
+    }
 
+    #[test]
+    fn test_weighted_graph_directed() {
         let mut graph = Graph::new();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
+
         graph.add_edge(a, b, "1.0");
         graph.add_edge(a, c, "2.0");
         graph.add_edge(c, b, "3.0");
-        let am = weighted(&graph, 0f64, str_to_scalar);
+
         assert_eq!(
-            am,
+            weighted(&graph, 0f64, str_to_scalar),
             Matrix3::new(0.0, 1.0, 2.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0)
         );
+    }
 
+    #[test]
+    fn test_weighted_matrix_undirected() {
         let mut graph = MatrixGraph::new_undirected();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
+
         graph.add_edge(a, b, 1f64);
         graph.add_edge(a, c, 2f64);
         graph.add_edge(c, b, 3f64);
-        let am = weighted(&graph, 0f64, float_to_scalar);
+
         assert_eq!(
-            am,
+            weighted(&graph, 0f64, float_to_scalar),
             Matrix3::new(0.0, 1.0, 2.0, 1.0, 0.0, 3.0, 2.0, 3.0, 0.0)
         );
+    }
 
+    #[test]
+    fn test_weighted_matrix_directed() {
         let mut graph = MatrixGraph::new();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
+
         graph.add_edge(a, b, 1f64);
         graph.add_edge(a, c, 2f64);
         graph.add_edge(c, b, 3f64);
-        let am = weighted(&graph, 0f64, float_to_scalar);
+
         assert_eq!(
-            am,
+            weighted(&graph, 0f64, float_to_scalar),
             Matrix3::new(0.0, 1.0, 2.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0)
         );
+    }
 
+    #[test]
+    fn test_weighted_graphmap_undirected() {
         let mut graph = UnGraphMap::new();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
+
         graph.add_edge(a, b, 1f64);
         graph.add_edge(a, c, 2f64);
         graph.add_edge(c, b, 3f64);
-        let am = weighted(&graph, 0f64, float_to_scalar);
+
         assert_eq!(
-            am,
+            weighted(&graph, 0f64, float_to_scalar),
             Matrix3::new(0.0, 1.0, 2.0, 1.0, 0.0, 3.0, 2.0, 3.0, 0.0)
         );
+    }
 
+    #[test]
+    fn test_weighted_graphmap_directed() {
         let mut graph = DiGraphMap::new();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
+
         graph.add_edge(a, b, 1f64);
         graph.add_edge(a, c, 2f64);
         graph.add_edge(c, b, 3f64);
-        let am = weighted(&graph, 0f64, float_to_scalar);
+
         assert_eq!(
-            am,
+            weighted(&graph, 0f64, float_to_scalar),
             Matrix3::new(0.0, 1.0, 2.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0)
         );
+    }
 
+    #[test]
+    fn test_weighted_csr() {
         let mut graph = Csr::<char, f64>::new();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
+
         graph.add_edge(a, b, 1f64);
         graph.add_edge(a, c, 2f64);
         graph.add_edge(c, b, 3f64);
-        let am = weighted(&graph, 0f64, float_to_scalar);
+
         assert_eq!(
-            am,
+            weighted(&graph, 0f64, float_to_scalar),
             Matrix3::new(0.0, 1.0, 2.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0)
         );
+    }
 
+    #[test]
+    fn test_weighted_stable_graph() {
         let mut graph = StableGraph::new();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
+
         graph.add_edge(a, b, "1.0");
         graph.add_edge(a, c, "2.0");
         graph.add_edge(c, b, "3.0");
-        let am = weighted(&graph, 0f64, str_to_scalar);
+
         assert_eq!(
-            am,
+            weighted(&graph, 0f64, str_to_scalar),
             Matrix3::new(0.0, 1.0, 2.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0)
         );
 
@@ -359,12 +420,14 @@ mod test {
             am,
             Matrix3::new(0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
         );
+
         graph.remove_node(a);
         let am = weighted(&graph, 0f64, str_to_scalar);
         assert_eq!(
             am,
             Matrix3::new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
         );
+
         graph.remove_node(c);
         let am = weighted(&graph, 0f64, str_to_scalar);
         assert_eq!(am, DMatrix::from_element(0, 0, 0.0));

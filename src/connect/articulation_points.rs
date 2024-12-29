@@ -125,7 +125,7 @@ mod tests {
     use petgraph::graph::UnGraph;
 
     #[test]
-    fn test_articulation_points() {
+    fn test_articulation_points_case_1() {
         let mut g = UnGraph::<i8, i8>::new_undirected();
         assert_eq!(articulation_points(&g), vec![]);
 
@@ -153,7 +153,10 @@ mod tests {
 
         g.add_edge(n3, n0, 5);
         assert_eq!(articulation_points(&g), vec![n3]);
+    }
 
+    #[test]
+    fn test_articulation_points_case_2() {
         let mut g = UnGraph::new_undirected();
         let n0 = g.add_node(());
         let n1 = g.add_node(());

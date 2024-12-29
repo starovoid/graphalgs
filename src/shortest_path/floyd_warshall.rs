@@ -239,10 +239,6 @@ mod tests {
         graph
     }
 
-    fn graph5() -> Graph<(), f32> {
-        Graph::<(), f32>::new()
-    }
-
     fn graph6() -> Graph<(), f32> {
         let mut graph = Graph::<(), f32>::new();
         let n0 = graph.add_node(());
@@ -256,9 +252,21 @@ mod tests {
     }
 
     #[test]
-    fn test_floyd_warshall() {
-        let inf = f32::INFINITY;
+    fn test_floyd_warshall_empty_graph() {
+        let graph = Graph::<(), f32>::new();
+        assert_eq!(floyd_warshall(&graph, |edge| *edge.weight()), Ok(vec![]));
+    }
 
+    #[test]
+    fn test_floyd_warshall_single_node() {
+        assert_eq!(
+            floyd_warshall(&graph4(), |edge| *edge.weight()),
+            Ok(vec![vec![0.0]])
+        );
+    }
+
+    #[test]
+    fn test_floyd_warshall_one_component() {
         assert_eq!(
             floyd_warshall(&graph1(), |edge| *edge.weight()),
             Ok(vec![
@@ -269,6 +277,11 @@ mod tests {
                 vec![18.0, 15.0, 34.0, 20.0, 0.0]
             ])
         );
+    }
+
+    #[test]
+    fn test_floyd_warshall_two_components() {
+        let inf = f32::INFINITY;
 
         assert_eq!(
             floyd_warshall(&graph2(), |edge| *edge.weight()),
@@ -283,7 +296,10 @@ mod tests {
                 vec![inf, inf, inf, inf, inf, 6.0, 1.0, 0.0],
             ])
         );
+    }
 
+    #[test]
+    fn test_floyd_warshall_negative_cycle() {
         // Graphs with negative cycle
         assert_eq!(
             floyd_warshall(&graph3(), |edge| *edge.weight()),
@@ -294,19 +310,13 @@ mod tests {
             Err(NegativeCycle {})
         );
 
+        // Create negative cycle in graph1.
         let mut graph = graph1();
         graph.add_edge(3.into(), 3.into(), -5.0);
         assert_eq!(
             floyd_warshall(&graph, |edge| *edge.weight()),
             Err(NegativeCycle {})
         );
-
-        // Edge cases
-        assert_eq!(
-            floyd_warshall(&graph4(), |edge| *edge.weight()),
-            Ok(vec![vec![0.0]])
-        );
-        assert_eq!(floyd_warshall(&graph5(), |edge| *edge.weight()), Ok(vec![]));
     }
 
     #[test]
@@ -343,20 +353,26 @@ mod tests {
     }
 
     #[test]
-    fn test_distance_map() {
-        let graph = graph5();
+    fn test_distance_map_empty() {
+        let graph = Graph::<(), f32>::new();
         let dist_matrix = floyd_warshall(&graph, |edge| *edge.weight()).unwrap();
         assert_eq!(distance_map(&graph, &dist_matrix), HashMap::new());
+    }
 
+    #[test]
+    fn test_distance_map_single_node() {
         let graph = graph4();
-        let mut true_dist_map = HashMap::new();
-        true_dist_map.insert((graph.from_index(0), graph.from_index(0)), 0.0);
+        let mut expected = HashMap::new();
+        expected.insert((graph.from_index(0), graph.from_index(0)), 0.0);
 
         let dist_matrix = floyd_warshall(&graph, |edge| *edge.weight()).unwrap();
-        assert_eq!(distance_map(&graph, &dist_matrix), true_dist_map);
+        assert_eq!(distance_map(&graph, &dist_matrix), expected);
+    }
 
+    #[test]
+    fn test_distance_map() {
         let graph = graph1();
-        let true_dist_map: HashMap<(NodeIndex, NodeIndex), f32> = [
+        let expected: HashMap<(NodeIndex, NodeIndex), f32> = [
             ((0.into(), 0.into()), 0.0),
             ((0.into(), 1.into()), 33.0),
             ((0.into(), 2.into()), 52.0),
@@ -388,6 +404,6 @@ mod tests {
         .collect();
 
         let dist_matrix = floyd_warshall(&graph, |edge| *edge.weight()).unwrap();
-        assert_eq!(distance_map(&graph, &dist_matrix), true_dist_map);
+        assert_eq!(distance_map(&graph, &dist_matrix), expected);
     }
 }

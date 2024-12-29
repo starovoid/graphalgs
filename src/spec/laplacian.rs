@@ -147,7 +147,7 @@ mod test {
     use petgraph::graph::{Graph, UnGraph};
 
     #[test]
-    fn test_laplacian_matrix() {
+    fn test_laplacian_matrix_ungraph() {
         let mut graph = UnGraph::<u32, f32>::new_undirected();
         let n0 = graph.add_node(0);
         let n1 = graph.add_node(1);
@@ -178,7 +178,10 @@ mod test {
                 -30.0, 0.0, -50.0, 80.0,
             )
         );
+    }
 
+    #[test]
+    fn test_laplacian_matrix_digraph() {
         let mut digraph = Graph::<u32, f32>::new();
         let n0 = digraph.add_node(0);
         let n1 = digraph.add_node(1);
