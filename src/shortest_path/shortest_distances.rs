@@ -143,7 +143,10 @@ mod tests {
             shortest_distances(&graph, graph.from_index(11)),
             vec![inf, inf, inf, 2.0, 3.0, inf, 1.0, 2.0, 3.0, inf, 1.0, 0.0]
         );
+    }
 
+    #[test]
+    fn shortest_distances_strongly_connected() {
         let mut graph = Graph::<u8, ()>::new();
         let n0 = graph.add_node(0);
         let n1 = graph.add_node(1);
