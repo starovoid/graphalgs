@@ -103,7 +103,7 @@ mod tests {
     use petgraph::graph::UnGraph;
 
     #[test]
-    fn test_find_bridges() {
+    fn test_find_bridges_case_1() {
         let mut g = UnGraph::<i8, i8>::new_undirected();
         assert_eq!(find_bridges(&g), vec![]);
 
@@ -131,7 +131,10 @@ mod tests {
 
         g.add_edge(n3, n0, 5);
         assert_eq!(find_bridges(&g), vec![(n3, n4)]);
+    }
 
+    #[test]
+    fn test_find_bridges_case_2() {
         let mut g = UnGraph::new_undirected();
         let n0 = g.add_node(());
         let n1 = g.add_node(());

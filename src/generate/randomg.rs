@@ -258,14 +258,16 @@ pub fn random_weighted_ungraph<K: SampleUniform + PartialOrd + Copy>(
 #[cfg(test)]
 mod test {
     use super::*;
-    use petgraph::Directed;
-    use petgraph::Graph;
 
     #[test]
     fn test_random_digraph() {
         assert!(random_digraph(5, 10).is_ok());
         assert!(random_digraph(0, 0).is_ok());
         assert!(random_digraph(50, 1000).is_ok());
+    }
+
+    #[test]
+    fn test_random_digraph_error() {
         assert_eq!(
             random_digraph(5, 100),
             Err(EdgeNumberError {
@@ -274,10 +276,6 @@ mod test {
                 max_edges: 20,
             })
         );
-        println!(
-            "{:?}",
-            &Graph::<(), (), Directed, usize>::from_edges(random_digraph(4, 11).unwrap())
-        );
     }
 
     #[test]
@@ -285,6 +283,10 @@ mod test {
         assert!(random_weighted_digraph(5, 10, 10u8, 100u8).is_ok());
         assert!(random_weighted_digraph(0, 0, -100i64, 100i64).is_ok());
         assert!(random_weighted_digraph(50, 1000, 0.0, 0.001).is_ok());
+    }
+
+    #[test]
+    fn test_random_weighted_digraph_error() {
         assert_eq!(
             random_weighted_digraph(5, 100, -10.0, 10.0),
             Err(EdgeNumberError {
@@ -293,15 +295,6 @@ mod test {
                 max_edges: 20,
             })
         );
-        println!(
-            "{:?}",
-            &Graph::<(), f32, Directed, usize>::from_edges(
-                random_weighted_digraph(4, 11, -10.0, 10.0)
-                    .unwrap()
-                    .into_iter()
-                    .map(|(edge, w)| (edge.0, edge.1, w))
-            )
-        );
     }
 
     #[test]
@@ -309,6 +302,10 @@ mod test {
         assert!(random_ungraph(5, 10).is_ok());
         assert!(random_ungraph(0, 0).is_ok());
         assert!(random_ungraph(50, 1000).is_ok());
+    }
+
+    #[test]
+    fn test_random_ungraph_error() {
         assert_eq!(
             random_ungraph(5, 100),
             Err(EdgeNumberError {
@@ -317,10 +314,6 @@ mod test {
                 max_edges: 10,
             })
         );
-        println!(
-            "{:?}",
-            &Graph::<(), (), Directed, usize>::from_edges(random_ungraph(4, 5).unwrap())
-        );
     }
 
     #[test]
@@ -328,6 +321,10 @@ mod test {
         assert!(random_weighted_ungraph(5, 10, 10u8, 100u8).is_ok());
         assert!(random_weighted_ungraph(0, 0, -100i32, 100i32).is_ok());
         assert!(random_weighted_ungraph(50, 500, 0.0, 0.001).is_ok());
+    }
+
+    #[test]
+    fn test_random_weighted_ungraph_error() {
         assert_eq!(
             random_weighted_ungraph(5, 100, -10.0, 10.0),
             Err(EdgeNumberError {
@@ -335,15 +332,6 @@ mod test {
                 nedges: 100,
                 max_edges: 10,
             })
-        );
-        println!(
-            "{:?}",
-            &Graph::<(), f32, Directed, usize>::from_edges(
-                random_weighted_ungraph(4, 5, -10.0, 10.0)
-                    .unwrap()
-                    .into_iter()
-                    .map(|(edge, w)| (edge.0, edge.1, w))
-            )
         );
     }
 }
