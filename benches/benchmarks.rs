@@ -1,12 +1,12 @@
-mod shortest_path;
+mod all_simple_shortest_paths;
 
+use all_simple_shortest_paths::*;
 use criterion::measurement::WallTime;
 use criterion::BenchmarkGroup;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use graphalgs::elementary_circuits::elementary_circuits;
 use graphalgs::generate::random_digraph;
 use petgraph::{Directed, Graph};
-use shortest_path::*;
 
 fn elementary_circuits_helper(
     group: &mut BenchmarkGroup<WallTime>,
@@ -34,4 +34,4 @@ fn bench_elementary_circuits(c: &mut Criterion) {
 }
 
 criterion_group!(benches, bench_elementary_circuits);
-criterion_main!(benches, shortest_path);
+criterion_main!(benches, all_simple_shortest_paths);
