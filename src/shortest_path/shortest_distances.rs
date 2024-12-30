@@ -34,8 +34,7 @@ where
     let mut queue: VecDeque<G::NodeId> = VecDeque::new();
     queue.push_back(start);
 
-    while !queue.is_empty() {
-        let current = queue.pop_front().unwrap();
+    while let Some(current) = queue.pop_front() {
         for v in graph.neighbors(current) {
             if visit_map.visit(v) {
                 queue.push_back(v);
