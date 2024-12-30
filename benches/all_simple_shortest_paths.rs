@@ -128,7 +128,7 @@ fn n_spfa_bench_helper(c: &mut BenchmarkGroup<WallTime>, node_count: usize, dens
 
 fn n_dijkstra_bench_helper(c: &mut BenchmarkGroup<WallTime>, node_count: usize, dense: bool) {
     let graph = simple_graph(node_count, dense);
-    c.bench_function(&format!("Dijkstra n times"), |b| {
+    c.bench_function("Dijkstra n times".to_string(), |b| {
         b.iter(|| {
             let mut output = Vec::with_capacity(node_count);
             for n in graph.node_identifiers() {
@@ -139,6 +139,7 @@ fn n_dijkstra_bench_helper(c: &mut BenchmarkGroup<WallTime>, node_count: usize, 
     });
 }
 
+#[allow(clippy::needless_range_loop)]
 fn simple_graph(node_count: usize, dense: bool) -> Graph<usize, f32, Undirected> {
     let mut graph = Graph::new_undirected();
     let nodes: Vec<NodeIndex<_>> = (0..node_count).map(|i| graph.add_node(i)).collect();
