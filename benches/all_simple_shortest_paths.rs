@@ -49,7 +49,7 @@ fn call_group(c: &mut BenchmarkGroup<WallTime>, node_count: usize, dense: bool) 
 
 fn seidel_bench_helper(c: &mut BenchmarkGroup<WallTime>, node_count: usize, dense: bool) {
     let graph = simple_graph(node_count, dense);
-    c.bench_function(&format!("Seidel {node_count} nodes"), |b| {
+    c.bench_function("Seidel", |b| {
         b.iter(|| {
             let output = seidel(&graph);
             black_box(output)
@@ -59,7 +59,7 @@ fn seidel_bench_helper(c: &mut BenchmarkGroup<WallTime>, node_count: usize, dens
 
 fn fw_bench_helper(c: &mut BenchmarkGroup<WallTime>, node_count: usize, dense: bool) {
     let graph = simple_graph(node_count, dense);
-    c.bench_function(&format!("Floyd-Warshall {node_count} nodes"), |b| {
+    c.bench_function("Floyd-Warshall", |b| {
         b.iter(|| {
             let output = floyd_warshall(&graph, |_| 1.0);
             black_box(output)
@@ -69,20 +69,17 @@ fn fw_bench_helper(c: &mut BenchmarkGroup<WallTime>, node_count: usize, dense: b
 
 fn petgraph_fw_bench_helper(c: &mut BenchmarkGroup<WallTime>, node_count: usize, dense: bool) {
     let graph = simple_graph(node_count, dense);
-    c.bench_function(
-        &format!("Floyd-Warshall (petgraph) {node_count} nodes"),
-        |b| {
-            b.iter(|| {
-                let output = petgraph_floyd_warshall(&graph, |_| 1.0);
-                black_box(output)
-            })
-        },
-    );
+    c.bench_function("Floyd-Warshall (petgraph)", |b| {
+        b.iter(|| {
+            let output = petgraph_floyd_warshall(&graph, |_| 1.0);
+            black_box(output)
+        })
+    });
 }
 
 fn n_bfs_bench_helper(c: &mut BenchmarkGroup<WallTime>, node_count: usize, dense: bool) {
     let graph = simple_graph(node_count, dense);
-    c.bench_function(&format!("BFS n times {node_count} nodes"), |b| {
+    c.bench_function("BFS n times", |b| {
         b.iter(|| {
             let mut output = Vec::with_capacity(node_count);
             for n in graph.node_identifiers() {
@@ -95,7 +92,7 @@ fn n_bfs_bench_helper(c: &mut BenchmarkGroup<WallTime>, node_count: usize, dense
 
 fn johnson_bench_helper(c: &mut BenchmarkGroup<WallTime>, node_count: usize, dense: bool) {
     let graph = simple_graph(node_count, dense);
-    c.bench_function(&format!("Johnson {node_count} nodes"), |b| {
+    c.bench_function("Johnson", |b| {
         b.iter(|| {
             let output = johnson(&graph, |_| 1.0);
             black_box(output)
@@ -105,7 +102,7 @@ fn johnson_bench_helper(c: &mut BenchmarkGroup<WallTime>, node_count: usize, den
 
 fn n_bellman_ford_bench_helper(c: &mut BenchmarkGroup<WallTime>, node_count: usize, dense: bool) {
     let graph = simple_graph(node_count, dense);
-    c.bench_function(&format!("Bellman-Ford n times {node_count} nodes"), |b| {
+    c.bench_function("Bellman-Ford n times", |b| {
         b.iter(|| {
             let mut output = Vec::with_capacity(node_count);
             for n in graph.node_identifiers() {
@@ -118,7 +115,7 @@ fn n_bellman_ford_bench_helper(c: &mut BenchmarkGroup<WallTime>, node_count: usi
 
 fn n_spfa_bench_helper(c: &mut BenchmarkGroup<WallTime>, node_count: usize, dense: bool) {
     let graph = simple_graph(node_count, dense);
-    c.bench_function(&format!("SPFA n times {node_count} nodes"), |b| {
+    c.bench_function("SPFA n times", |b| {
         b.iter(|| {
             let mut output = Vec::with_capacity(node_count);
             for n in graph.node_identifiers() {
@@ -131,7 +128,7 @@ fn n_spfa_bench_helper(c: &mut BenchmarkGroup<WallTime>, node_count: usize, dens
 
 fn n_dijkstra_bench_helper(c: &mut BenchmarkGroup<WallTime>, node_count: usize, dense: bool) {
     let graph = simple_graph(node_count, dense);
-    c.bench_function(&format!("Dijkstra n times {node_count} nodes"), |b| {
+    c.bench_function(&format!("Dijkstra n times"), |b| {
         b.iter(|| {
             let mut output = Vec::with_capacity(node_count);
             for n in graph.node_identifiers() {
