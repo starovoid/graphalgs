@@ -43,19 +43,22 @@ pub fn is_degree_sequence_graphlike(degrees: &[usize]) -> bool {
         .filter(|d| *d > 0usize)
         .collect::<BinaryHeap<usize>>();
 
-    while !degrees.is_empty() {
-        let d = degrees.pop().unwrap();
+    while let Some(d) = degrees.pop() {
         if d > degrees.len() {
             return false;
         }
 
         let mut temp = Vec::<usize>::new();
         for _ in 0..d {
-            let x = degrees.pop().unwrap();
-            if x == 0 {
-                return false;
+            match degrees.pop() {
+                Some(x) => {
+                    if x == 0 {
+                        return false;
+                    }
+                    temp.push(x - 1);
+                }
+                None => return false,
             }
-            temp.push(x - 1);
         }
 
         for x in temp.into_iter() {
