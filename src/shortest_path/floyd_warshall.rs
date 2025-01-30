@@ -1,14 +1,8 @@
 use std::collections::HashMap;
 use std::hash::Hash;
 
-pub use petgraph::algo::FloatMeasure;
+pub use petgraph::algo::{FloatMeasure, NegativeCycle};
 use petgraph::visit::{EdgeRef, GraphProp, IntoEdgeReferences, IntoNodeIdentifiers, NodeIndexable};
-
-/// An algorithm error: a cycle of negative weights was found in the graph.
-// In the current version of petgraph, the NegativeCycle structure contains a private field,
-// which prevents its public use. With the correction of this error, this definition will be removed.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct NegativeCycle {}
 
 /// [Floyd–Warshall algorithm](https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm) for all pairs shortest path problem.
 ///
@@ -96,7 +90,7 @@ where
     // it means that there is a negative cycle in the graph.
     for (i, row) in dist.iter().enumerate() {
         if row[i] < K::zero() {
-            return Err(NegativeCycle {});
+            return Err(NegativeCycle(()));
         }
     }
 
@@ -303,11 +297,11 @@ mod tests {
         // Graphs with negative cycle
         assert_eq!(
             floyd_warshall(&graph3(), |edge| *edge.weight()),
-            Err(NegativeCycle {})
+            Err(NegativeCycle(()))
         );
         assert_eq!(
             floyd_warshall(&graph6(), |edge| *edge.weight()),
-            Err(NegativeCycle {})
+            Err(NegativeCycle(()))
         );
 
         // Create negative cycle in graph1.
@@ -315,7 +309,7 @@ mod tests {
         graph.add_edge(3.into(), 3.into(), -5.0);
         assert_eq!(
             floyd_warshall(&graph, |edge| *edge.weight()),
-            Err(NegativeCycle {})
+            Err(NegativeCycle(()))
         );
     }
 

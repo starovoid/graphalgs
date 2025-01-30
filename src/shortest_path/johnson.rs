@@ -2,8 +2,7 @@ use std::cmp::Ordering;
 use std::collections::{BinaryHeap, VecDeque};
 use std::ops::Sub;
 
-use crate::shortest_path::NegativeCycle;
-pub use petgraph::algo::FloatMeasure;
+pub use petgraph::algo::{FloatMeasure, NegativeCycle};
 use petgraph::visit::{
     EdgeRef, IntoEdges, IntoNodeIdentifiers, NodeIndexable, VisitMap, Visitable,
 };
@@ -91,7 +90,7 @@ where
         // In a graph without a negative cycle, no vertex can improve
         // the shortest distances by more than |V| times.
         if visits[ix(i)] >= graph.node_bound() {
-            return Err(NegativeCycle {});
+            return Err(NegativeCycle(()));
         }
         visits[ix(i)] += 1;
 
@@ -339,19 +338,19 @@ mod tests {
     fn test_johnson_negative_cycle() {
         assert_eq!(
             johnson(&graph3(), |edge| *edge.weight()),
-            Err(NegativeCycle {})
+            Err(NegativeCycle(()))
         );
 
         assert_eq!(
             johnson(&graph5(), |edge| *edge.weight()),
-            Err(NegativeCycle {})
+            Err(NegativeCycle(()))
         );
 
         let mut graph = graph1();
         graph.add_edge(3.into(), 3.into(), -5.0);
         assert_eq!(
             johnson(&graph, |edge| *edge.weight()),
-            Err(NegativeCycle {})
+            Err(NegativeCycle(()))
         );
     }
 
