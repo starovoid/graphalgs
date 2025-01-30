@@ -18,4 +18,4 @@ mod seidel;
 pub use seidel::{apd, seidel};
 
 pub use petgraph::algo::floyd_warshall::floyd_warshall as floyd_warshall_petgraph;
-pub use petgraph::algo::{astar, bellman_ford, dijkstra, NegativeCycle};
+pub use petgraph::algo::{astar, bellman_ford, dijkstra, k_shortest_path, NegativeCycle};
