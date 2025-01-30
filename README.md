@@ -24,6 +24,7 @@ Graph algorithms based on the Rust "petgraph" library.
 8. [shortest_distances](https://docs.rs/graphalgs/latest/graphalgs/shortest_path/fn.shortest_distances.html) algorithm based on BFS.
 9. [distance_map](https://docs.rs/graphalgs/latest/graphalgs/shortest_path/fn.distance_map.html) Convert distance matrix into hashmap.
 10. [Floyd–Warshall from petgraph](https://docs.rs/graphalgs/latest/graphalgs/shortest_path/fn.floyd_warshall_petgraph.html)
+11. [k'th shortest path algorithm](https://docs.rs/petgraph/latest/petgraph/algo/k_shortest_path/fn.k_shortest_path.html) Compute the length of the k'th shortest path from `start` to every reachable node. Re-exported from petgraph.
 
 ## Minimum spanning tree (MST) algorithms
 1. [Borůvka’s algorithm](https://docs.rs/graphalgs/latest/graphalgs/mst/fn.boruvka.html)
