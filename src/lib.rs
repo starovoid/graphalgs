@@ -1,5 +1,5 @@
 //! `graphalgs` is a graph algorithms library based on the Rust
-//! [petgraph](https://docs.rs/petgraph/0.5.1/petgraph/) crate.
+//! [petgraph](https://docs.rs/petgraph) crate.
 //!
 //! # Examples
 //!
