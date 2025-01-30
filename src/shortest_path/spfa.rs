@@ -1,6 +1,5 @@
 //use std::collections::VecDeque;
-use crate::shortest_path::floyd_warshall::NegativeCycle;
-use petgraph::algo::FloatMeasure;
+use petgraph::algo::{FloatMeasure, NegativeCycle};
 use petgraph::visit::{EdgeRef, IntoEdges, IntoNodeIdentifiers, NodeIndexable};
 
 /// [Shortest Path Faster Algorithm](https://en.wikipedia.org/wiki/Shortest_Path_Faster_Algorithm).
@@ -93,7 +92,7 @@ where
         // In a graph without a negative cycle, no vertex can improve
         // the shortest distances by more than |V| times.
         if visits[ix(i)] >= graph.node_bound() {
-            return Err(NegativeCycle {});
+            return Err(NegativeCycle(()));
         }
         visits[ix(i)] += 1;
 
