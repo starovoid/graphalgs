@@ -37,6 +37,7 @@ pub extern crate nalgebra;
 pub extern crate petgraph;
 
 pub mod adj_matrix;
+pub mod coloring;
 pub mod connect;
 pub mod elementary_circuits;
 pub mod generate;
