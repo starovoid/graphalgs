@@ -2,7 +2,7 @@ use crate::adj_matrix::unweighted;
 use nalgebra::base::{dimension::Dyn, DMatrix, Scalar};
 use nalgebra::{ClosedAddAssign, ClosedMulAssign};
 use num_traits::identities::{One, Zero};
-use petgraph::visit::{IntoEdges, IntoNodeIdentifiers, NodeCount, NodeIndexable};
+use petgraph::visit::{GraphProp, IntoEdges, IntoNodeIdentifiers, NodeCount, NodeIndexable};
 use std::ops::Sub;
 
 /// [Seidel's algorithm (APD)](https://en.wikipedia.org/wiki/Seidel%27s_algorithm)
@@ -17,9 +17,9 @@ use std::ops::Sub;
 ///
 /// ```
 /// use graphalgs::shortest_path::seidel;
-/// use petgraph::Graph;
+/// use petgraph::{Graph, Undirected};
 ///
-/// let mut graph: Graph<(), ()> = Graph::new();
+/// let mut graph: Graph<(), (), Undirected> = Graph::new_undirected();
 /// let n0 = graph.add_node(()); // Node with no weight
 /// let n1 = graph.add_node(());
 /// let n2 = graph.add_node(());
@@ -27,13 +27,13 @@ use std::ops::Sub;
 /// let n4 = graph.add_node(());
 /// let n5 = graph.add_node(());
 /// graph.extend_with_edges(&[
-///     (0, 1), (1, 0),  // A pair of two directed edges forms one undirected edge
-///     (0, 3), (3, 0),
-///     (1, 2), (2, 1),
-///     (1, 5), (5, 1),
-///     (2, 4), (4, 2),
-///     (3, 4), (4, 3),
-///     (4, 5), (5, 4),
+///     (0, 1),
+///     (0, 3),
+///     (1, 2),
+///     (1, 5),
+///     (2, 4),
+///     (3, 4),
+///     (4, 5),
 /// ]);
 ///
 /// // Graph representation
@@ -57,9 +57,10 @@ use std::ops::Sub;
 /// );
 pub fn seidel<G>(graph: G) -> Vec<Vec<u32>>
 where
-    G: IntoEdges + IntoNodeIdentifiers + NodeCount + NodeIndexable,
+    G: IntoEdges + IntoNodeIdentifiers + NodeCount + NodeIndexable + GraphProp,
 {
-    apd(unweighted(graph, 1u32, 0u32))
+    let adj = unweighted(graph, 1u32, 0u32, true);
+    unsafe { apd(adj) }
         .row_iter()
         .map(|row| row.into_iter().copied().collect())
         .collect()
@@ -79,10 +80,10 @@ where
 /// ```
 /// use graphalgs::shortest_path::apd;
 /// use graphalgs::adj_matrix;
-/// use petgraph::Graph;
+/// use petgraph::{Graph, Directed};
 /// use nalgebra::Matrix6;
 ///
-/// let mut graph: Graph<(), ()> = Graph::new();
+/// let mut graph: Graph<(), (), Directed> = Graph::new();
 /// let n0 = graph.add_node(()); // Node with no weight
 /// let n1 = graph.add_node(());
 /// let n2 = graph.add_node(());
@@ -90,13 +91,13 @@ where
 /// let n4 = graph.add_node(());
 /// let n5 = graph.add_node(());
 /// graph.extend_with_edges(&[
-///     (0, 1), (1, 0),  // A pair of two directed edges forms one undirected edge
-///     (0, 3), (3, 0),
-///     (1, 2), (2, 1),
-///     (1, 5), (5, 1),
-///     (2, 4), (4, 2),
-///     (3, 4), (4, 3),
-///     (4, 5), (5, 4),
+///     (0, 1),
+///     (0, 3),
+///     (1, 2),
+///     (1, 5),
+///     (2, 4),
+///     (3, 4),
+///     (4, 5),
 /// ]);
 ///
 /// // Graph representation
@@ -108,12 +109,13 @@ where
 /// //  \------(4)------/
 ///
 /// // Graph diameter is two, so we can use u8 to calculate the distances between the vertices.
-/// let matrix = adj_matrix::unweighted(&graph, 1u8, 0u8);
+/// // Pass `true` since the graph is directed.
+/// let matrix = adj_matrix::unweighted(&graph, 1u8, 0u8, true);
 ///
 /// // Graph distance matrix.
 /// // At position (i, j) the length of the path from vertex i to vertex j.
 /// assert_eq!(
-///     apd(matrix),
+///     unsafe { apd(matrix) },
 ///     Matrix6::new(
 ///         0, 1, 2, 1, 2, 2,
 ///         1, 0, 1, 2, 2, 1,
@@ -123,8 +125,13 @@ where
 ///         2, 1, 2, 2, 1, 0,
 ///     )
 /// );
+/// ```
+///
+/// # Safety
+/// Caller must ensure that the graph is undirected.
+/// Otherwise, a stack overflow may occur due to algorithm inconsistencies.
 #[allow(non_snake_case)]
-pub fn apd<K>(A: DMatrix<K>) -> DMatrix<K>
+pub unsafe fn apd<K>(A: DMatrix<K>) -> DMatrix<K>
 where
     K: Scalar
         + Copy
@@ -142,40 +149,39 @@ where
         return A;
     }
 
-    unsafe {
-        let mut Z = DMatrix::uninit(nrows, ncols).assume_init();
-        A.mul_to(&A, &mut Z);
+    let mut Z = DMatrix::from_element(n, n, K::zero());
+    A.mul_to(&A, &mut Z);
 
-        let mut B = DMatrix::uninit(nrows, ncols).assume_init();
-        for i in 0..n {
-            for j in 0..n {
-                if i != j && (A[(i, j)] == K::one() || Z[(i, j)] > K::zero()) {
-                    B[(i, j)] = K::one();
-                } else {
-                    B[(i, j)] = K::zero();
-                }
+    let mut B = DMatrix::uninit(nrows, ncols);
+    for i in 0..n {
+        for j in 0..n {
+            if i != j && (A[(i, j)] == K::one() || Z[(i, j)] > K::zero()) {
+                B[(i, j)].write(K::one());
+            } else {
+                B[(i, j)].write(K::zero());
             }
         }
-
-        let T = apd(B);
-        let mut X = DMatrix::uninit(nrows, ncols).assume_init();
-        T.mul_to(&A, &mut X);
-
-        let degree = A.row_iter().map(|row| row.sum()).collect::<Vec<K>>();
-
-        let mut D = DMatrix::uninit(nrows, ncols).assume_init();
-        for i in 0..n {
-            for j in 0..n {
-                if X[(i, j)] >= T[(i, j)] * degree[j] {
-                    D[(i, j)] = T[(i, j)] + T[(i, j)];
-                } else {
-                    D[(i, j)] = T[(i, j)] + T[(i, j)] - K::one();
-                }
-            }
-        }
-
-        D
     }
+    let B = B.assume_init();
+
+    let T = apd(B);
+    let mut X = DMatrix::from_element(n, n, K::zero());
+    T.mul_to(&A, &mut X);
+
+    let degree = A.row_iter().map(|row| row.sum()).collect::<Vec<K>>();
+
+    let mut D = DMatrix::uninit(nrows, ncols);
+    for i in 0..n {
+        for j in 0..n {
+            if X[(i, j)] >= T[(i, j)] * degree[j] {
+                D[(i, j)].write(T[(i, j)] + T[(i, j)]);
+            } else {
+                D[(i, j)].write(T[(i, j)] + T[(i, j)] - K::one());
+            }
+        }
+    }
+
+    D.assume_init()
 }
 
 #[cfg(test)]
@@ -184,7 +190,7 @@ mod tests {
     use crate::generate::random_ungraph;
     use crate::shortest_path::floyd_warshall;
     use petgraph::graph::Graph;
-    use petgraph::Directed;
+    use petgraph::{Directed, Undirected};
     use rand::Rng;
 
     fn graph1() -> Graph<(), f32> {
@@ -243,7 +249,7 @@ mod tests {
     #[test]
     fn test_apd() {
         assert_eq!(
-            apd(unweighted(&graph1(), 1u8, 0u8))
+            unsafe { apd(unweighted(&graph1(), 1u8, 0u8, false)) }
                 .row_iter()
                 .map(|row| row.into_iter().copied().collect::<Vec<u8>>())
                 .collect::<Vec<Vec<u8>>>(),
@@ -257,7 +263,7 @@ mod tests {
         );
 
         assert_eq!(
-            apd(unweighted(&graph2(), 1usize, 0usize))
+            unsafe { apd(unweighted(&graph2(), 1usize, 0usize, false)) }
                 .row_iter()
                 .map(|row| row.into_iter().copied().collect::<Vec<usize>>())
                 .collect::<Vec<Vec<usize>>>(),
@@ -274,7 +280,7 @@ mod tests {
     fn test_apd_empty_graph() {
         let graph = Graph::<(), f32>::new();
         assert_eq!(
-            apd(unweighted(&graph, 1f32, 0.0))
+            unsafe { apd(unweighted(&graph, 1f32, 0.0, false)) }
                 .row_iter()
                 .map(|row| row.into_iter().copied().collect::<Vec<f32>>())
                 .collect::<Vec<Vec<f32>>>(),
@@ -285,7 +291,7 @@ mod tests {
     #[test]
     fn test_apd_single_edge() {
         assert_eq!(
-            apd(unweighted(&graph3(), 1f64, 0.0))
+            unsafe { apd(unweighted(&graph3(), 1f64, 0.0, false)) }
                 .row_iter()
                 .map(|row| row.into_iter().copied().collect::<Vec<f64>>())
                 .collect::<Vec<Vec<f64>>>(),
@@ -299,7 +305,7 @@ mod tests {
         let mut rng = rand::thread_rng();
 
         for n in 2..=50 {
-            let graph = Graph::<(), f32, Directed, usize>::from_edges(
+            let graph = Graph::<(), f32, Undirected, usize>::from_edges(
                 random_ungraph(
                     n,
                     rng.gen_range((n - 1) * (n - 2) / 2 + 1..=n * (n - 1) / 2),
@@ -310,7 +316,7 @@ mod tests {
             );
 
             assert_eq!(
-                apd(unweighted(&graph, 1f32, 0.0))
+                unsafe { apd(unweighted(&graph, 1f32, 0.0, false)) }
                     .row_iter()
                     .map(|row| row.into_iter().copied().collect::<Vec<f32>>())
                     .collect::<Vec<Vec<f32>>>(),

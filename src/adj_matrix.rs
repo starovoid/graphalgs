@@ -12,6 +12,8 @@ use petgraph::visit::{
 ///
 /// If there is an edge from vertex i to vertex j, then cell (i, j) of the
 /// adjacency matrix will contain the value ```is_edge```, otherwise - ```no_edge```.
+/// The 'force_undir` parameter duplicates each value relative to the main diagonal to make sure
+/// that the resulting matrix corresponds to an undirected graph, if given graph is directed.
 ///
 /// This matrix is designed for calculations using **nalgebra** so it can only contain types
 /// with the ```Scalar``` trait. [About Scalar](https://docs.rs/nalgebra/0.25.1/nalgebra/base/trait.Scalar.html).
@@ -33,21 +35,25 @@ use petgraph::visit::{
 /// graph.add_edge(a, c, 2.0);
 /// graph.add_edge(c, b, 3.0);
 ///
-/// let adj_m = unweighted(&graph, 1.0, 0.0);
+/// let adj_m = unweighted(&graph, 1.0, 0.0, false);
 /// assert_eq!(adj_m, Matrix3::new(0.0, 1.0, 1.0,
 ///                                0.0, 0.0, 0.0,
 ///                                0.0, 1.0, 0.0));
 /// ```
-pub fn unweighted<G, W>(graph: G, is_edge: W, no_edge: W) -> DMatrix<W>
+pub fn unweighted<G, W>(graph: G, is_edge: W, no_edge: W, force_undir: bool) -> DMatrix<W>
 where
-    G: IntoEdges + IntoNodeIdentifiers + NodeCount + NodeIndexable,
+    G: IntoEdges + IntoNodeIdentifiers + NodeCount + NodeIndexable + GraphProp,
     W: Scalar + Copy,
 {
     let mut adj_m = DMatrix::from_element(graph.node_bound(), graph.node_bound(), no_edge);
+    let dup = graph.is_directed() && force_undir;
 
     for i in 0..graph.node_bound() {
         for j in graph.neighbors(graph.from_index(i)) {
             adj_m[(i, graph.to_index(j))] = is_edge;
+            if dup {
+                adj_m[(graph.to_index(j), i)] = is_edge;
+            }
         }
     }
 
@@ -127,12 +133,12 @@ mod test {
     #[test]
     fn test_unweighted_trivial() {
         let graph = Graph::<char, f64>::new();
-        let am = unweighted(&graph, 1f64, 0f64);
+        let am = unweighted(&graph, 1f64, 0f64, false);
         assert_eq!(am, DMatrix::from_element(0, 0, 0.0));
 
         let mut graph = Graph::<char, f64>::new();
         graph.add_node('a');
-        let am = unweighted(&graph, 1f64, 0f64);
+        let am = unweighted(&graph, 1f64, 0f64, false);
         assert_eq!(am, DMatrix::from_element(1, 1, 0.0));
     }
 
@@ -148,8 +154,12 @@ mod test {
         graph.add_edge(c, b, 3f64);
 
         assert_eq!(
-            unweighted(&graph, 1f64, 0f64),
+            unweighted(&graph, 1f64, 0f64, false),
             Matrix3::new(0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
+        );
+        assert_eq!(
+            unweighted(&graph, 1f64, 0f64, true),
+            Matrix3::new(0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0)
         );
     }
 
@@ -165,7 +175,11 @@ mod test {
         graph.add_edge(c, b, 3f64);
 
         assert_eq!(
-            unweighted(&graph, 1f64, 0f64),
+            unweighted(&graph, 1f64, 0f64, false),
+            Matrix3::new(0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0)
+        );
+        assert_eq!(
+            unweighted(&graph, 1f64, 0f64, true),
             Matrix3::new(0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0)
         );
     }
@@ -182,8 +196,13 @@ mod test {
         graph.add_edge(c, b, 3i64);
 
         assert_eq!(
-            unweighted(&graph, true, false),
+            unweighted(&graph, true, false, false),
             Matrix3::new(false, true, true, false, false, false, false, true, false)
+        );
+
+        assert_eq!(
+            unweighted(&graph, true, false, true),
+            Matrix3::new(false, true, true, true, false, true, true, true, false)
         );
     }
 
@@ -199,7 +218,12 @@ mod test {
         graph.add_edge(c, b, 3f64);
 
         assert_eq!(
-            unweighted(&graph, 1f64, 0f64),
+            unweighted(&graph, 1f64, 0f64, false),
+            Matrix3::new(0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0)
+        );
+
+        assert_eq!(
+            unweighted(&graph, 1f64, 0f64, false),
             Matrix3::new(0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0)
         );
     }
@@ -216,8 +240,13 @@ mod test {
         graph.add_edge(c, b, 3f64);
 
         assert_eq!(
-            unweighted(&graph, 1f64, 0f64),
+            unweighted(&graph, 1f64, 0f64, false),
             Matrix3::new(0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
+        );
+
+        assert_eq!(
+            unweighted(&graph, 1f64, 0f64, true),
+            Matrix3::new(0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0)
         );
     }
 
@@ -233,7 +262,12 @@ mod test {
         graph.add_edge(c, b, 3f64);
 
         assert_eq!(
-            unweighted(&graph, 1f64, 0f64),
+            unweighted(&graph, 1f64, 0f64, false),
+            Matrix3::new(0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
+        );
+
+        assert_eq!(
+            unweighted(&graph, 1f64, 0f64, false),
             Matrix3::new(0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
         );
     }
@@ -250,7 +284,11 @@ mod test {
         graph.add_edge(c, b, 3f64);
 
         assert_eq!(
-            unweighted(&graph, 1f64, 0f64),
+            unweighted(&graph, 1f64, 0f64, false),
+            Matrix3::new(0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0)
+        );
+        assert_eq!(
+            unweighted(&graph, 1f64, 0f64, true),
             Matrix3::new(0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0)
         );
     }
@@ -267,15 +305,24 @@ mod test {
         graph.add_edge(c, b, 3f64);
 
         assert_eq!(
-            unweighted(&graph, 1f64, 0f64),
+            unweighted(&graph, 1f64, 0f64, false),
             Matrix3::new(0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
+        );
+        assert_eq!(
+            unweighted(&graph, 1f64, 0f64, true),
+            Matrix3::new(0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0)
         );
 
         graph.remove_node(b);
-        let am = unweighted(&graph, 1f64, 0f64);
+        let am = unweighted(&graph, 1f64, 0f64, false);
         assert_eq!(
             am,
             Matrix3::new(0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+        );
+        let am = unweighted(&graph, 1f64, 0f64, true);
+        assert_eq!(
+            am,
+            Matrix3::new(0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0)
         );
     }
 
