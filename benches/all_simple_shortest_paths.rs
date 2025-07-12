@@ -119,7 +119,7 @@ fn n_spfa_bench_helper(c: &mut BenchmarkGroup<WallTime>, node_count: usize, dens
         b.iter(|| {
             let mut output = Vec::with_capacity(node_count);
             for n in graph.node_identifiers() {
-                output.push(spfa(&graph, n));
+                output.push(spfa(&graph, n, |_| 1.0));
             }
             black_box(output)
         })

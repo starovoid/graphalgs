@@ -84,7 +84,7 @@ pub fn random_digraph(
 /// ## Returns
 /// * `Err`: if the required number of vertices is greater than the maximum possible.
 /// * `Ok`: set `HashMap<(usize, usize), K>` of edges with `usize` vertex indices,
-///         where `K` is the type of weights.
+///   where `K` is the type of weights.
 ///
 /// # Examples
 ///
@@ -206,7 +206,7 @@ pub fn random_ungraph(
 /// ## Returns
 /// * `Err`: if the required number of vertices is greater than the maximum possible.
 /// * `Ok`: set `HashMap<(usize, usize), K>` of edges with `usize` vertex indices,
-///         where `K` is the type of weights.
+///   where `K` is the type of weights.
 ///
 /// # Examples
 ///
