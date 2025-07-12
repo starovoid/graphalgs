@@ -1,5 +1,7 @@
 //! Graph with known number of edges.
 
+use std::hash::BuildHasher;
+
 use petgraph::csr::Csr;
 use petgraph::graph::{Graph, IndexType};
 use petgraph::graphmap::{GraphMap, NodeTrait};
@@ -47,13 +49,13 @@ impl<N: NodeTrait, E, Ty: EdgeType> EdgeCount for GraphMap<N, E, Ty> {
     }
 }
 
-impl<'a, N: 'a, E: 'a, Ty: EdgeType> EdgeCount for &'a MatrixGraph<N, E, Ty> {
+impl<'a, N: 'a, E: 'a, S: BuildHasher, Ty: EdgeType> EdgeCount for &'a MatrixGraph<N, E, S, Ty> {
     fn number_of_edges(self) -> usize {
         self.edge_count()
     }
 }
 
-impl<N, E, Ty: EdgeType> EdgeCount for MatrixGraph<N, E, Ty> {
+impl<N, E, S: BuildHasher, Ty: EdgeType> EdgeCount for MatrixGraph<N, E, S, Ty> {
     fn number_of_edges(self) -> usize {
         self.edge_count()
     }

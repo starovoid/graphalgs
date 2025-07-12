@@ -122,8 +122,9 @@ mod test {
     use petgraph::csr::Csr;
     use petgraph::graph::Graph;
     use petgraph::graphmap::{DiGraphMap, UnGraphMap};
-    use petgraph::matrix_graph::MatrixGraph;
+    use petgraph::matrix_graph::{MatrixGraph, UnMatrix};
     use petgraph::stable_graph::StableGraph;
+    use std::hash::RandomState;
 
     fn float_to_scalar(w: &f64) -> f64 {
         *w
@@ -189,7 +190,7 @@ mod test {
 
     #[test]
     fn test_unweighted_matrix_directed() {
-        let mut graph = MatrixGraph::new();
+        let mut graph = MatrixGraph::<_, _, RandomState>::new();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
@@ -211,7 +212,7 @@ mod test {
 
     #[test]
     fn test_unweighted_matrix_undirected() {
-        let mut graph = MatrixGraph::new_undirected();
+        let mut graph = UnMatrix::<_, _, RandomState>::new_undirected();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
@@ -369,7 +370,7 @@ mod test {
 
     #[test]
     fn test_weighted_matrix_undirected() {
-        let mut graph = MatrixGraph::new_undirected();
+        let mut graph = UnMatrix::<_, _, RandomState>::new_undirected();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
@@ -390,7 +391,7 @@ mod test {
 
     #[test]
     fn test_weighted_matrix_directed() {
-        let mut graph = MatrixGraph::new();
+        let mut graph = MatrixGraph::<_, _, RandomState>::new();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
@@ -411,7 +412,7 @@ mod test {
 
     #[test]
     fn test_weighted_graphmap_undirected() {
-        let mut graph = UnGraphMap::new();
+        let mut graph = UnGraphMap::<_, _, RandomState>::new();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
@@ -432,7 +433,7 @@ mod test {
 
     #[test]
     fn test_weighted_graphmap_directed() {
-        let mut graph = DiGraphMap::new();
+        let mut graph = DiGraphMap::<_, _, RandomState>::new();
         let a = graph.add_node('a');
         let b = graph.add_node('b');
         let c = graph.add_node('c');
