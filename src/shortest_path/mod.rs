@@ -8,11 +8,9 @@ pub use shortest_distances::shortest_distances;
 mod floyd_warshall;
 pub use floyd_warshall::{distance_map, floyd_warshall};
 
-mod spfa;
-pub use spfa::spfa;
+pub use petgraph::algo::spfa;
 
-mod johnson;
-pub use johnson::johnson;
+pub use petgraph::algo::johnson;
 
 mod seidel;
 pub use seidel::{apd, seidel};

@@ -14,7 +14,7 @@ name = "graphalgs"
 bench = false
 
 [dependencies]
-petgraph = "0.7"
+petgraph = "0.8"
 nalgebra = "0.33"
 rand = "0.8"
 num-traits = "0.2"
