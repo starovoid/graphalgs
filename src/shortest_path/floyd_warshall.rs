@@ -16,7 +16,7 @@ use petgraph::visit::{EdgeRef, GraphProp, IntoEdgeReferences, IntoNodeIdentifier
 /// ## Returns
 /// * `Err`: if graph contains negative cycle.
 /// * `Ok`: matrix `Vec<Vec<K>>` of shortest distances, in cell **(i, j)** of which the length of the shortest path
-///         from node **i** to node **j** is stored.
+///   from node **i** to node **j** is stored.
 ///
 /// # Examples
 ///

@@ -19,7 +19,7 @@ use std::collections::HashSet;
 ///
 /// ## Returns
 /// * `HashSet<(usize, usize)>`: the set of edges of the resulting MST,
-///     where each edge is denoted by a pair of vertex indices, index order is random.
+///   where each edge is denoted by a pair of vertex indices, index order is random.
 ///
 /// # Examples
 /// ```
